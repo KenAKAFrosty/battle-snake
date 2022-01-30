@@ -1,4 +1,4 @@
-const { info, move } = require('../src/logic')
+const { info, move } = require('../src/commandHandlingAndMetadata')
 
 function createGameState(myBattlesnake) {
     return {
@@ -42,16 +42,10 @@ describe('Battlesnake API Version', () => {
 
 describe('Battlesnake Moves', () => {
     test('should never move into its own neck', () => {
-        // Arrange
         const me = createBattlesnake("me", [{ x: 2, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 0 }])
         const gameState = createGameState(me)
-
-        // Act 1,000x (this isn't a great way to test, but it's okay for starting out)
-        for (let i = 0; i < 1000; i++) {
-            const moveResponse = move(gameState)
-            // In this state, we should NEVER move left.
-            const allowedMoves = ["up", "down", "right"]
-            expect(allowedMoves).toContain(moveResponse.move)
-        }
+        const moveResponse = move(gameState)
+        const allowedMoves = ["up", "down", "right"]
+        expect(allowedMoves).toContain(moveResponse.move)
     })
 })

@@ -1,5 +1,5 @@
 const express = require('express')
-const { info, start, move, end } = require('./logic')
+const { info, start, move, end } = require('./commandHandlingAndMetadata')
 
 const app = express()
 app.use(express.json())
