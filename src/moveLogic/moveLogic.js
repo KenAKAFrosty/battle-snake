@@ -6,23 +6,41 @@ function getMove(gameState){
         left: true,
         right: true
     }
+    const myDirectionHeaded = getDirectionHeaded(gameState.you);
+    const backwardsForMe = getOppositeDirection(myDirectionHeaded);
+    possibleMoves[backwardsForMe] = false;
 
-    // Step 0: Don't let your Battlesnake move back on its own neck
-    const myHead = gameState.you.head
-    const myNeck = gameState.you.body[1]
-    if (myNeck.x < myHead.x) {
-        possibleMoves.left = false
-    } else if (myNeck.x > myHead.x) {
-        possibleMoves.right = false
-    } else if (myNeck.y < myHead.y) {
-        possibleMoves.down = false
-    } else if (myNeck.y > myHead.y) {
-        possibleMoves.up = false
-    }
     const safeMoves = Object.keys(possibleMoves).filter(key => possibleMoves[key])
     const move = safeMoves[Math.floor(Math.random() * safeMoves.length)]
     return move;
 }
+
+
+function getDirectionHeaded(snake){ 
+    const head = snake.body[0];
+    const neck = snake.body[1]
+    if (neck.x < head.x) {
+       return "right"
+    } else if (neck.x > head.x) {
+        return "left"
+    } else if (neck.y < head.y) {
+        return "up"
+    } else if (neck.y > head.y) {
+        return "down"
+    }
+}
+
+
+function getOppositeDirection(direction){
+    return {
+        "right":"left",
+        "left":"right",
+        "up":"down",
+        "down":"up"
+    }[direction]
+}
+
+
 
 
 
