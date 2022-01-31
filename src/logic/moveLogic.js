@@ -1,6 +1,7 @@
 
-function getMove(boardMap, myHead){ 
-    const valueScores = getValueScoresOfAllDirectionsFrom(myHead, boardMap);
+function getMove(boardMap, mySnake){ 
+    let valueScores = getValueScoresOfAllDirectionsFrom(mySnake.body[0], boardMap);
+    valueScores = applySlightPositiveToFacingDirection(valueScores, mySnake)
     const directionToMove = getDirectionWithLargestValueScore(valueScores);
     return directionToMove;
 }
@@ -49,6 +50,12 @@ function getDirectionWithLargestValueScore(valueScores){
     return null;
 }
 
+
+function applySlightPositiveToFacingDirection(valueScores, mySnake){ 
+    const directionFacing = getDirectionFacing(mySnake);
+    valueScores[directionFacing] += 1;
+    return valueScores;
+}
 
 function getDirectionFacing(snake){ 
     const head = snake.body[0];

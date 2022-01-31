@@ -158,7 +158,7 @@ describe('Board Mapping', ()=> {
         const head = boardMap["0,0"];
         const tail = boardMap["0,3"];
         expect(head.valueScore).toEqual(0);
-        expect(tail.valueScore).toEqual(2);
+        expect(tail.valueScore).toEqual(0);
         expect(boardMap["0,2"].valueScore).toEqual(-10);
     })
 })
