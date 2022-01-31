@@ -52,15 +52,15 @@ describe('Battlesnake API Version', () => {
 })
 
 describe('Battlesnake Basic Death Prevention', () => {
-    test.skip('should never move into its own neck', () => {
-        const me = createBattlesnake("me", [{ x: 2, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 0 }])
+    test('should never move into its own neck', () => {
+        const me = createBattlesnake("me", [{ x: 2, y: 1 }, { x: 1, y: 1 }, { x: 0, y: 1 }])
         const gameState = createGameState(me, 7)
         const moveResponse = move(gameState)
         const allowedMoves = ["up", "down", "right"]
         expect(allowedMoves).toContain(moveResponse.move)
     })
 
-    test.skip(`Battlesnake doesn't move out of bounds`, ()=> { 
+    test(`Battlesnake doesn't move out of bounds`, ()=> { 
         const facingDownInBottomLeftCorner = [ {x:0,y:0}, {x:0,y:1}, {x:0,y:2}, {x:0,y:3} ]
         const me = createBattlesnake("me", facingDownInBottomLeftCorner);
         const gameState = createGameState(me, 11);

@@ -2,6 +2,7 @@
 function getMove(boardMap, myHead){ 
     const valueScores = getValueScoresOfAllDirectionsFrom(myHead, boardMap);
     const directionToMove = getDirectionWithLargestValueScore(valueScores);
+    return directionToMove;
 }
 
 function getValueScoresOfAllDirectionsFrom(coordinateObject, boardMap){ 
