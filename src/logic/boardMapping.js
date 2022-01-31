@@ -89,7 +89,7 @@ function getBoardMapWithFoodApplied(boardMap, food) {
             },
             valueScore: 3
         }
-        applyValueScoreInRingAroundCoordinates(boardMap, piece, 2)
+        applyValueScoreInRingAroundCoordinates(boardMap, piece, 1)
     }
     return boardMap;
 }
