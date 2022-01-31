@@ -1,6 +1,7 @@
 
 function getMove(boardMap, myHead){ 
     const valueScores = getValueScoresOfAllDirectionsFrom(myHead, boardMap);
+    const directionToMove = getDirectionWithLargestValueScore(valueScores);
 }
 
 function getValueScoresOfAllDirectionsFrom(coordinateObject, boardMap){ 
@@ -10,14 +11,13 @@ function getValueScoresOfAllDirectionsFrom(coordinateObject, boardMap){
         "right":0,
         "left":0
     }
-    for (key in allDirections){ 
-        const coordinateString = getCoordinateStringOfDirectionFromCoordinateObject(key, coordinateObject);
+    for (direction in allDirections){ 
+        const coordinateString = getCoordinateStringOfDirectionFromCoordinateObject(direction, coordinateObject);
         const valueScore = boardMap[coordinateString].valueScore;
-        allDirections[key] = valueScore;
+        allDirections[direction] = valueScore;
     }
     return allDirections
 }
-
 
 
 function getCoordinateStringOfDirectionFromCoordinateObject(direction, coordinateObject) { 
@@ -36,6 +36,18 @@ function getCoordinateStringOfDirectionFromCoordinateObject(direction, coordinat
         },
     } [direction]()
 }
+
+
+function getDirectionWithLargestValueScore(valueScores){ 
+    const max = Math.max(...Object.values(valueScores));
+    for (direction in valueScores){ 
+        if (valueScores[direction] === max){ 
+            return direction;
+        }
+    }
+    return null;
+}
+
 
 function getDirectionFacing(snake){ 
     const head = snake.body[0];
@@ -66,5 +78,6 @@ function getOppositeDirection(direction){
 module.exports = { 
     getMove,
     getCoordinateStringOfDirectionFromCoordinateObject,
-    getValueScoresOfAllDirectionsFrom
+    getValueScoresOfAllDirectionsFrom,
+    getDirectionWithLargestValueScore
 }

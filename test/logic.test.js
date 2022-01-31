@@ -1,7 +1,8 @@
 const { info, move } = require('../src/commandHandlingAndMetadata');
 const { 
     getCoordinateStringOfDirectionFromCoordinateObject,
-    getValueScoresOfAllDirectionsFrom
+    getValueScoresOfAllDirectionsFrom,
+    getDirectionWithLargestValueScore
 } = require('../src/logic/moveLogic');
 const { 
     getEmptyBoardMap, 
@@ -93,7 +94,16 @@ describe('Move utilities', ()=> {
         expect(valueScoresAllDirections["down"]).toEqual(-15);
         expect(valueScoresAllDirections["left"]).toEqual(3);
         expect(valueScoresAllDirections["right"]).toEqual(7);
-        
+    })
+
+    test('get direction with largest value score', ()=> { 
+        const valueScores = { 
+            "up":3,
+            "down":-10,
+            "right":0,
+            "left":0
+        }
+        expect (getDirectionWithLargestValueScore(valueScores)).toEqual("up")
     })
 })
 
