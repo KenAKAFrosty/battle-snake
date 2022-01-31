@@ -33,7 +33,7 @@ function move(gameState) {
     boardMap = getBoardMapWithOutOfBoundsApplied(boardMap, -15);
     boardMap = getBoardMapWithSnakeOccupantsApplied(boardMap, gameState.board.snakes);
     boardMap = getBoardMapWithSnakeValueScoresApplied(boardMap);
-    boardMap = getBoardMapWithFoodApplied(boardMap);
+    boardMap = getBoardMapWithFoodApplied(boardMap, gameState.board.food);
     const move = getMove(boardMap, gameState.you);
     const response = { 
         move
