@@ -34,7 +34,28 @@ function getBoardMapWithOutOfBoundsApplied(boardMap, valueScore){
 
 
 function getBoardMapWithSnakeOccupantsApplied(boardMap,snakes){ 
+    if (!boardMap || !snakes) return null;
+    for (const snake of snakes){ 
+        for (const bodyIndex in snake.body){ 
+            const part = snake.body[bodyIndex];
+            const occupant = { 
+                type:"snake",
+                name:snake.name,
+                id:snake.id,
+                squad:snake.squad,
+                health:snake.health,
+                bodyIndex:Number(bodyIndex),
+                length:snake.body.length
+            }
+            const coordinateString = part.x.toString() + "," + part.y.toString();
+            boardMap[coordinateString].occupant = occupant;
+        }
+    }
+    return boardMap;
+}
 
+function getBoardMapWithSnakeValueScoresApplied(boardMap){ 
+    return boardMap;
 }
 
 module.exports = {

@@ -1,5 +1,5 @@
 const { info, move } = require('../src/commandHandlingAndMetadata');
-const { getEmptyBoardMap, getBoardMapWithOutOfBoundsApplied } = require('../src/logic/boardMapping.js')
+const { getEmptyBoardMap, getBoardMapWithOutOfBoundsApplied, getBoardMapWithSnakeOccupantsApplied } = require('../src/logic/boardMapping.js')
 
 function createGameState(myBattlesnake,boardHeightAndWidth) {
     return {
@@ -77,7 +77,7 @@ describe('Board Mapping', ()=> {
         expect(somewhereInMiddleish.valueScore).toEqual(0)
     })
 
-    test('Property empty board + out of bounds applied correctly', ()=> { 
+    test('Properly empty board + out of bounds applied correctly', ()=> { 
         let boardMap = getEmptyBoardMap(11);
         boardMap = getBoardMapWithOutOfBoundsApplied(boardMap, -10);
         const bottomLeft = boardMap["-1,-1"];
@@ -89,5 +89,17 @@ describe('Board Mapping', ()=> {
         expect(topRight.valueScore).toEqual(-10)
         expect(somewhereInMiddleish.occupant).toEqual({type:"empty"})
         expect(somewhereInMiddleish.valueScore).toEqual(0)
+    })
+
+    test('Applying basic snake occupancy', ()=> { 
+        let boardMap = getEmptyBoardMap(11);
+        const snakeBodyFacingDownInBottomLeftCorner = [ {x:0,y:0}, {x:0,y:1}, {x:0,y:2}, {x:0,y:3} ];
+        const snake = createBattlesnake("snek",snakeBodyFacingDownInBottomLeftCorner);
+        boardMap = getBoardMapWithSnakeOccupantsApplied( boardMap, [snake] )
+        const head = boardMap["0,0"].occupant;
+        const tail = boardMap["0,3"].occupant;
+        expect(head.bodyIndex).toEqual(0);
+        expect(tail.bodyIndex).toEqual(3);
+        expect(boardMap["0,2"].occupant.name).toEqual("snek");
     })
 })

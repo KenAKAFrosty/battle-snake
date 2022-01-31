@@ -1,1 +1,1 @@
-# (WIP)
+# 🐍⚔ Welcome, challengers ⚔🐍
