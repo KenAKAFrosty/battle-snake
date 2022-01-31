@@ -8,7 +8,8 @@ const {
     getEmptyBoardMap, 
     getBoardMapWithOutOfBoundsApplied, 
     getBoardMapWithSnakeOccupantsApplied, 
-    getBoardMapWithSnakeValueScoresApplied 
+    getBoardMapWithSnakeValueScoresApplied, 
+    applyValueScoreInRingAroundCoordinates
 } = require('../src/logic/boardMapping.js');
 
 function createGameState(myBattlesnake,boardHeightAndWidth) {
@@ -157,8 +158,24 @@ describe('Board Mapping', ()=> {
         boardMap = getBoardMapWithSnakeValueScoresApplied( boardMap );
         const head = boardMap["0,0"];
         const tail = boardMap["0,3"];
-        expect(head.valueScore).toEqual(0);
+        expect(head.valueScore).toEqual(-5);
         expect(tail.valueScore).toEqual(0);
         expect(boardMap["0,2"].valueScore).toEqual(-10);
+    })
+
+    test('Applying value score in ring around coords', ()=>{ 
+        let boardMap = getEmptyBoardMap(6);
+        applyValueScoreInRingAroundCoordinates(boardMap, {x:2,y:2}, 2);
+        expect(boardMap["2,2"].valueScore).toEqual(0);
+        expect(boardMap["1,1"].valueScore).toEqual(2);
+        expect(boardMap["1,2"].valueScore).toEqual(2);
+        expect(boardMap["1,3"].valueScore).toEqual(2);
+        expect(boardMap["3,3"].valueScore).toEqual(2);
+        expect(boardMap["3,2"].valueScore).toEqual(2);
+        expect(boardMap["3,1"].valueScore).toEqual(2);
+        expect(boardMap["2,1"].valueScore).toEqual(2);
+        expect(boardMap["2,3"].valueScore).toEqual(2);
+        expect(boardMap["2,4"].valueScore).toEqual(0);
+        expect(boardMap["0,1"].valueScore).toEqual(0);
     })
 })
