@@ -76,7 +76,7 @@ function getBasicSnakeBodyPartValueScores(occupant){
     if (occupant.bodyIndex === 0) { whichPart = "head"};
     if (occupant.bodyIndex === occupant.bodyLength -1) { whichPart = "tail" };
     return { 
-        "head":0,
+        "head":-5,
         "tail":0,
         "other":-10
     } [whichPart]
