@@ -108,6 +108,18 @@ function applyValueScoreInRingAroundCoordinates(boardMap, coordinateObject, valu
     }
 }
 
+function getBoardMapWithHealthierEnemiesWeightedNegative(boardMap, snakes, mySnake){ 
+    if (!boardMap || !mySnake) return null;
+    for (const snake of snakes){ 
+        if (snake.id === mySnake.id) { continue };
+        if (snake.health < mySnake.health) { continue }
+        for (const part of snake.body){ 
+            applyValueScoreInRingAroundCoordinates(boardMap,part,-1.5)
+        }
+    }
+    return boardMap
+}
+
 
 module.exports = {
     getEmptyBoardMap,
@@ -115,5 +127,6 @@ module.exports = {
     getBoardMapWithSnakeOccupantsApplied,
     getBoardMapWithSnakeValueScoresApplied,
     getBoardMapWithFoodApplied,
-    applyValueScoreInRingAroundCoordinates
+    applyValueScoreInRingAroundCoordinates,
+    getBoardMapWithHealthierEnemiesWeightedNegative
 }
