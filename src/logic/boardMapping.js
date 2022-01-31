@@ -22,7 +22,6 @@ function getBoardMapWithOutOfBoundsApplied(boardMap, valueScore) {
         boardMap[`${i},-1`].occupant = { type: "outOfBounds" };
         boardMap[`${i},-1`].valueScore = valueScore;
 
-
         boardMap[`${boardMap.size},${i}`].occupant = { type: "outOfBounds" };
         boardMap[`${boardMap.size},${i}`].valueScore = valueScore;
 
@@ -56,7 +55,6 @@ function getBoardMapWithSnakeOccupantsApplied(boardMap, snakes) {
 
 
 function getBoardMapWithSnakeValueScoresApplied(boardMap) {
-    //simple for now. in future will be more robust with sub functions and declarative data structures;
     if (!boardMap) return null;
     for (let x = -1; x <= boardMap.size; x++) {
         for (let y = -1; y <= boardMap.size; y++) {
@@ -77,7 +75,7 @@ function getBasicSnakeBodyPartValueScores(occupant) {
     if (occupant.bodyIndex === occupant.bodyLength - 1) { whichPart = "tail" };
     return {
         "head": -5,
-        "tail": 0,
+        "tail": -1,
         "other": -10
     }[whichPart]
 }
