@@ -2,7 +2,8 @@ const {
     getEmptyBoardMap, 
     getBoardMapWithOutOfBoundsApplied, 
     getBoardMapWithSnakeOccupantsApplied, 
-    getBoardMapWithSnakeValueScoresApplied 
+    getBoardMapWithSnakeValueScoresApplied, 
+    getBoardMapWithFoodApplied
 } = require('./logic/boardMapping.js');
 
 const { getMove } = require('./logic/moveLogic.js');
@@ -32,6 +33,7 @@ function move(gameState) {
     boardMap = getBoardMapWithOutOfBoundsApplied(boardMap, -15);
     boardMap = getBoardMapWithSnakeOccupantsApplied(boardMap, gameState.board.snakes);
     boardMap = getBoardMapWithSnakeValueScoresApplied(boardMap);
+    boardMap = getBoardMapWithFoodApplied(boardMap);
     const move = getMove(boardMap, gameState.you);
     const response = { 
         move

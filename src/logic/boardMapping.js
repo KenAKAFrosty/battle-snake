@@ -82,7 +82,18 @@ function getBasicSnakeBodyPartValueScores(occupant){
     } [whichPart]
 }
 
-
+function getBoardMapWithFoodApplied(boardMap, food){ 
+    for (const piece of food){ 
+        const coordinateString = piece.x + "," + piece.y;
+        boardMap[coordinateString] = { 
+            occupant:{
+                type:"food",
+            },
+            valueScore:3
+        }
+    }
+    return boardMap;
+}
 
 
 
@@ -90,5 +101,6 @@ module.exports = {
     getEmptyBoardMap,
     getBoardMapWithOutOfBoundsApplied,
     getBoardMapWithSnakeOccupantsApplied,
-    getBoardMapWithSnakeValueScoresApplied
+    getBoardMapWithSnakeValueScoresApplied,
+    getBoardMapWithFoodApplied
 }
