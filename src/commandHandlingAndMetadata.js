@@ -36,6 +36,7 @@ function move(gameState) {
     const response = { 
         move
     }
+    console.log('board map',boardMap)
     console.log(`${gameState.game.id} MOVE ${gameState.turn}: ${response.move}`)
     return response
 }
