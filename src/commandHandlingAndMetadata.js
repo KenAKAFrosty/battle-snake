@@ -1,4 +1,4 @@
-const { getMove } = require('./moveLogic/moveLogic.js');
+const { getMove } = require('./logic/moveLogic.js');
 
 function info() {
     console.log("INFO")

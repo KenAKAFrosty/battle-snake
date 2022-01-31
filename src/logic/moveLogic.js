@@ -6,8 +6,8 @@ function getMove(gameState){
         left: true,
         right: true
     }
-    const myDirectionHeaded = getDirectionHeaded(gameState.you);
-    const backwardsForMe = getOppositeDirection(myDirectionHeaded);
+    const myDirectionFacing = getDirectionFacing(gameState.you);
+    const backwardsForMe = getOppositeDirection(myDirectionFacing);
     possibleMoves[backwardsForMe] = false;
 
     const safeMoves = Object.keys(possibleMoves).filter(key => possibleMoves[key])
@@ -16,7 +16,7 @@ function getMove(gameState){
 }
 
 
-function getDirectionHeaded(snake){ 
+function getDirectionFacing(snake){ 
     const head = snake.body[0];
     const neck = snake.body[1]
     if (neck.x < head.x) {
@@ -39,8 +39,6 @@ function getOppositeDirection(direction){
         "down":"up"
     }[direction]
 }
-
-
 
 
 
