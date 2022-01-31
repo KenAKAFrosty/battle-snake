@@ -45,7 +45,7 @@ function getBoardMapWithSnakeOccupantsApplied(boardMap,snakes){
                 squad:snake.squad,
                 health:snake.health,
                 bodyIndex:Number(bodyIndex),
-                length:snake.body.length
+                bodyLength:snake.body.length
             }
             const coordinateString = part.x.toString() + "," + part.y.toString();
             boardMap[coordinateString].occupant = occupant;
@@ -54,12 +54,40 @@ function getBoardMapWithSnakeOccupantsApplied(boardMap,snakes){
     return boardMap;
 }
 
+
 function getBoardMapWithSnakeValueScoresApplied(boardMap){ 
+    //simple for now. in future will be more robust with sub functions and declarative data structures;
+    if (!boardMap) return null;
+    for (let x = -1; x <= boardMap.size; x++){ 
+        for (let y = -1; y <= boardMap.size; y++){ 
+            const coordinateString = x.toString() + "," + y.toString();
+            const tile = boardMap[coordinateString];
+            if (tile.occupant.type !== "snake") { continue };
+            tile.valueScore += getBasicSnakeBodyPartValueScores(tile.occupant);
+        }
+    }
     return boardMap;
 }
+
+
+function getBasicSnakeBodyPartValueScores(occupant){ 
+    if (occupant.type !== "snake") return null; 
+    let whichPart = "other";
+    if (occupant.bodyIndex === 0) { whichPart = "head"};
+    if (occupant.bodyIndex === occupant.bodyLength -1) { whichPart = "tail" };
+    return { 
+        "head":0,
+        "tail":2,
+        "other":-10
+    } [whichPart]
+}
+
+
+
 
 module.exports = {
     getEmptyBoardMap,
     getBoardMapWithOutOfBoundsApplied,
-    getBoardMapWithSnakeOccupantsApplied
+    getBoardMapWithSnakeOccupantsApplied,
+    getBoardMapWithSnakeValueScoresApplied
 }
