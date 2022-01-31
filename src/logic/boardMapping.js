@@ -87,7 +87,7 @@ function getBoardMapWithFoodApplied(boardMap, food) {
             occupant: {
                 type: "food",
             },
-            valueScore: 3
+            valueScore: 1
         }
         applyValueScoreInRingAroundCoordinates(boardMap, piece, 1)
     }
