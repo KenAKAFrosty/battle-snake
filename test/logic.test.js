@@ -9,7 +9,8 @@ const {
     getBoardMapWithOutOfBoundsApplied, 
     getBoardMapWithSnakeOccupantsApplied, 
     getBoardMapWithSnakeValueScoresApplied, 
-    applyValueScoreInRingAroundCoordinates
+    applyValueScoreInRingAroundCoordinates,
+    applyNegativeValueScoreToCurledEmptySpace
 } = require('../src/logic/boardMapping.js');
 
 function createGameState(myBattlesnake,boardHeightAndWidth) {
@@ -158,9 +159,9 @@ describe('Board Mapping', ()=> {
         boardMap = getBoardMapWithSnakeValueScoresApplied( boardMap );
         const head = boardMap["0,0"];
         const tail = boardMap["0,3"];
-        expect(head.valueScore).toEqual(-5);
-        expect(tail.valueScore).toEqual(0);
-        expect(boardMap["0,2"].valueScore).toEqual(-10);
+        expect(head.valueScore).toEqual(-15);
+        expect(tail.valueScore).toEqual(-15);
+        expect(boardMap["0,2"].valueScore).toEqual(-15);
     })
 
     test('Applying value score in ring around coords', ()=>{ 
@@ -177,5 +178,43 @@ describe('Board Mapping', ()=> {
         expect(boardMap["2,3"].valueScore).toEqual(2);
         expect(boardMap["2,4"].valueScore).toEqual(0);
         expect(boardMap["0,1"].valueScore).toEqual(0);
+    })
+
+
+    test('Correctly finds negative space in between curled body, columns only',()=>{ 
+        let boardMap = getEmptyBoardMap(11);
+        boardMap = getBoardMapWithOutOfBoundsApplied(boardMap,-15);
+        let myBody = [
+            {x:3,y:3},
+            {x:2,y:3},
+            {x:1,y:3},
+            {x:0,y:3},
+            {x:0,y:2},
+            {x:0,y:1},
+            {x:0,y:0},
+            {x:1,y:0},
+            {x:2,y:0}
+        ]
+        boardMap = applyNegativeValueScoreToCurledEmptySpace(boardMap, myBody)
+        expect(boardMap["2,1"].valueScore).toEqual(-5);
+    })
+
+    test('Correctly finds negative space in between curled body, rows only',()=>{ 
+        let boardMap = getEmptyBoardMap(11);
+        boardMap = getBoardMapWithOutOfBoundsApplied(boardMap,-15);
+        let myBody = [
+            {x:3,y:0},
+            {x:3,y:1},
+            {x:3,y:2},
+            {x:3,y:3},
+            {x:2,y:3},
+            {x:1,y:3},
+            {x:0,y:3},
+            {x:0,y:2},
+            {x:0,y:1},
+            {x:0,y:0}
+        ]
+        boardMap = applyNegativeValueScoreToCurledEmptySpace(boardMap, myBody)
+        expect(boardMap["2,1"].valueScore).toEqual(-5);
     })
 })

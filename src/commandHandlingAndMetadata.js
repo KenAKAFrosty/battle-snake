@@ -4,7 +4,8 @@ const {
     getBoardMapWithSnakeOccupantsApplied, 
     getBoardMapWithSnakeValueScoresApplied, 
     getBoardMapWithFoodApplied,
-    getBoardMapWithHealthierEnemiesWeightedNegative
+    getBoardMapWithHealthierEnemiesWeightedNegative,
+    applyNegativeValueScoreToCurledEmptySpace
 } = require('./logic/boardMapping.js');
 
 const { getMove } = require('./logic/moveLogic.js');
@@ -35,7 +36,8 @@ function move(gameState) {
     boardMap = getBoardMapWithSnakeOccupantsApplied(boardMap, gameState.board.snakes);
     boardMap = getBoardMapWithSnakeValueScoresApplied(boardMap);
     boardMap = getBoardMapWithFoodApplied(boardMap, gameState.board.food);
-    boardMap = getBoardMapWithHealthierEnemiesWeightedNegative(boardMap,gameState.board.snakes,gameState.you)
+    boardMap = getBoardMapWithHealthierEnemiesWeightedNegative(boardMap,gameState.board.snakes,gameState.you);
+    boardMap = applyNegativeValueScoreToCurledEmptySpace(boardMap,gameState.you.body)
     const move = getMove(boardMap, gameState.you);
     const response = { 
         move

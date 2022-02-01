@@ -74,9 +74,9 @@ function getBasicSnakeBodyPartValueScores(occupant) {
     if (occupant.bodyIndex === 0) { whichPart = "head" };
     if (occupant.bodyIndex === occupant.bodyLength - 1) { whichPart = "tail" };
     return {
-        "head": -5,
-        "tail": -1,
-        "other": -10
+        "head": -15,
+        "tail": -15,
+        "other": -15
     }[whichPart]
 }
 
@@ -120,6 +120,64 @@ function getBoardMapWithHealthierEnemiesWeightedNegative(boardMap, snakes, mySna
     return boardMap
 }
 
+function applyNegativeValueScoreToCurledEmptySpace(boardMap, myBody){ 
+    for (part of myBody) {
+        checkRowForEmptyCurledSpace(part,myBody, boardMap)
+        checkColumnForEmptyCurledSpace(part,myBody, boardMap);
+    }
+    return boardMap;
+}
+
+function checkColumnForEmptyCurledSpace(coords, allCoords, boardMap){ 
+    const x = coords.x;
+    const thisColumn = allCoords.filter(e=>e.x === x);
+    
+    for (let i = 1; i < thisColumn.length; i++){ 
+        const distanceFromPrevious = Math.abs( thisColumn[i].y - thisColumn[i-1].y ); 
+        if(distanceFromPrevious > 1 ) { 
+            applyScoreToTilesBetweenColumn( thisColumn[i], thisColumn[i-1], boardMap, 2.5)
+        }
+    }
+}
+
+function checkRowForEmptyCurledSpace(coords, allCoords, boardMap){ 
+    const y = coords.y;
+    const thisColumn = allCoords.filter(e=>e.y === y);
+    
+    for (let i = 1; i < thisColumn.length; i++){ 
+        const distanceFromPrevious = Math.abs( thisColumn[i].x - thisColumn[i-1].x); 
+        if(distanceFromPrevious > 1 ) { 
+            applyScoreToTilesBetweenRow( thisColumn[i], thisColumn[i-1], boardMap, 2.5)
+        }
+    }
+}
+
+
+function applyScoreToTilesBetweenColumn(tile1,tile2, boardMap, value){ 
+    if (tile1.x !== tile2.x) return null;
+    const x = tile1.x;
+    const smallerY = Math.min(tile1.y, tile2.y); 
+    const largerY = Math.max(tile1.y, tile2.y);
+
+    for (let i = smallerY+1; i < largerY; i ++ ){ 
+        boardMap[x+","+i].valueScore -= value
+    }
+}
+
+
+
+function applyScoreToTilesBetweenRow(tile1,tile2, boardMap, value){ 
+    if (tile1.y !== tile2.y) return null;
+    const y = tile1.y;
+    const smallerX = Math.min(tile1.x, tile2.x); 
+    const largerX = Math.max(tile1.x, tile2.x);
+
+    for (let i = smallerX+1; i < largerX; i ++ ){ 
+        boardMap[i+","+y].valueScore -= value
+    }
+}
+
+
 
 module.exports = {
     getEmptyBoardMap,
@@ -128,5 +186,6 @@ module.exports = {
     getBoardMapWithSnakeValueScoresApplied,
     getBoardMapWithFoodApplied,
     applyValueScoreInRingAroundCoordinates,
-    getBoardMapWithHealthierEnemiesWeightedNegative
+    getBoardMapWithHealthierEnemiesWeightedNegative,
+    applyNegativeValueScoreToCurledEmptySpace
 }
