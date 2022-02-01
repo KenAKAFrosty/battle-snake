@@ -1,0 +1,59 @@
+let body = [
+    {x:3,y:3},
+    {x:2,y:3},
+    {x:1,y:3},
+    {x:0,y:3},
+    {x:0,y:2},
+    {x:0,y:1},
+    {x:0,y:0},
+    {x:1,y:0},
+    {x:2,y:0}
+]
+
+for (part of body){ 
+    checkRow(part,body)
+    checkColumn(part,body);
+}
+
+
+function checkRow(coords, allCoords) {
+    const y = coords.y;
+    const thisRow = allCoords.filter(e=>e.y === y);
+    
+    for (let i = 1; i < thisRow.length; i++){ 
+        const distanceFromPrevious = Math.abs( thisRow[i].x - thisRow[i-1].x ); 
+        if (distanceFromPrevious > 1 ){ 
+            console.log(distanceFromPrevious, thisRow[i], thisRow[i-1]);
+        }
+    }
+}
+
+function checkColumn(coords, allCoords){ 
+    const x = coords.x;
+    const thisColumn = allCoords.filter(e=>e.x === x);
+    
+    for (let i = 1; i < thisColumn.length; i++){ 
+        const distanceFromPrevious = Math.abs( thisColumn[i].y - thisColumn[i-1].y ); 
+        if(distanceFromPrevious > 1 ) { 
+            printBadColumnsBetween( thisColumn[i], thisColumn[i-1])
+        }
+    }
+}
+
+function printBadColumnsBetween(startTile,endTile){ 
+    if (startTile.x !== endTile.x) return;
+    const x = startTile.x;
+    const smallerY = Math.min(startTile.y, endTile.y); 
+    const largerY = Math.max(startTile.y, endTile.y);
+    for (let i = smallerY+1; i < largerY; i ++ ){ 
+        console.log({
+            x:x,
+            y:i
+        })
+    }
+    
+}
+
+function printBadRowsBetween(){ 
+
+}
