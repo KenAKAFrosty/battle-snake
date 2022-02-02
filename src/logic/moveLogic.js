@@ -2,19 +2,17 @@ const { getGameStateWithTurnSimulation } = require("./turnSimulation.js");
 
 
 function getMove(gameState){ 
-    const updatedGameState = getGameStateWithTurnSimulation(gameState);
-    const survivalDirections = updatedGameState.survivalDirections;
-    console.log(survivalDirections);
-    let choice = "";
-    let maxValue = 0
-    for (const direction in survivalDirections){ 
-        const value = survivalDirections[direction];
-        if (value > maxValue) { 
-            maxValue = value;
-            choice = direction;
-        }
-    }
-    return choice;
+    gameState = getGameStateWithTurnSimulation(gameState);
+    const allOutcomes = gameState.outcomes; 
+
+    const avoidOverfeeding = allOutcomes.filter(e=> !e.snake.overfed);
+    const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(avoidOverfeeding);
+    const bestNotOverfedChoice = getBestChoiceFromDirectionValues(avoidOverfeedingDirections);
+    if (bestNotOverfedChoice) { return bestNotOverfedChoice }
+
+    const survivalDirections = getDirectionValuesFromOutcomes(allOutcomes);
+    const bestSurvivalChoice = getBestChoiceFromDirectionValues(survivalDirections);
+    return bestSurvivalChoice;
 }
 
 function getIdsOfSnakesWhoAteThisRound(gameState){ 
@@ -30,6 +28,28 @@ function getIdsOfSnakesWhoAteThisRound(gameState){
     return ids;
 }
 
+
+function getDirectionValuesFromOutcomes(outcomes){ 
+    const directionValues = {};
+    for (const direction of directions) {
+        directionValues[direction] = outcomes.filter(e => e.snake.originalDirection === direction).length
+    }
+    return directionValues;
+}
+
+function getBestChoiceFromDirectionValues(directionValues){ 
+    let choice = "";
+    let maxValue = 0
+    for (const direction in directionValues){ 
+        const value = directionValues[direction];
+        if (value > maxValue) { 
+            maxValue = value;
+            choice = direction;
+        }
+    }
+    if (maxValue === 0){ return false }
+    else {return choice}
+}
 
 
 function getDirectionFacing(snake){ 
