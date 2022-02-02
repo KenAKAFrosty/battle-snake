@@ -38,6 +38,8 @@ function move(gameState) {
     boardMap = getBoardMapWithFoodApplied(boardMap, gameState.board.food);
     boardMap = getBoardMapWithHealthierEnemiesWeightedNegative(boardMap,gameState.board.snakes,gameState.you);
     boardMap = applyNegativeValueScoreToCurledEmptySpace(boardMap,gameState.you.body)
+
+    
     const move = getMove(boardMap, gameState.you);
     const response = { 
         move
