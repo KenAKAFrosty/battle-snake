@@ -1,16 +1,17 @@
-const { getSurvivalDirections } = require("./turnSimulation.js");
+const { getGameStateWithTurnSimulation } = require("./turnSimulation.js");
 
 
 function getMove(gameState){ 
-    const survivalDirections = getSurvivalDirections(gameState);
+    const updatedGameState = getGameStateWithTurnSimulation(gameState);
+    const survivalDirections = updatedGameState.survivalDirections;
     console.log(survivalDirections);
     let choice = "";
     let maxValue = 0
-    for (key in survivalDirections){ 
-        const value = survivalDirections[key];
+    for (const direction in survivalDirections){ 
+        const value = survivalDirections[direction];
         if (value > maxValue) { 
             maxValue = value;
-            choice = key;
+            choice = direction;
         }
     }
     return choice;

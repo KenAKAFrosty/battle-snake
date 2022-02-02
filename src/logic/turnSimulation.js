@@ -1,3 +1,50 @@
+const directions = ["up", "down", "left", "right"]
+
+function getGameStateWithTurnSimulation(gameState) {
+    const mySnake = gameState.you;
+    mySnake.turns = 0;
+    const gameStateWithOutcomes = getBreadthFirstOutcomesForAllDirectionsAfterNTurns(directions, 7, gameState.you);
+    const survivalDirections = {};
+    for (const direction of directions) {
+        survivalDirections[direction] = function () {
+            return gameStateWithOutcomes.outcomes.filter(e => e.originalDirection === direction).length
+        }()
+    }
+    gameState.survivalDirections = survivalDirections
+    return gameState;
+}
+
+function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(directions, turnsToLookAhead, gameState) {
+    const outcomes = [gameState.you];
+    for (let i = 0; i < outcomes.length; i++) {
+        const snake = outcomes[i];
+        if (snake.turns && snake.turns >= turnsToLookAhead) { break }
+        for (const direction of directions) {
+            const copy = JSON.parse(JSON.stringify(snake));
+            move(copy, direction)
+            copy.turns++
+            copy.health--
+            const foundFood = didFindFood(copy, gameState.board.food)
+            if (foundFood) {
+                health = 100
+                if (!gameState.ateFoodThisRound) { gameState['ateFoodThisRound'] = [] }
+                gameState.ateFoodThisRound.push(copy.id);
+            }
+            const selfCollided = isCollidedWithBodyPart(copy, [copy])
+            const boardCollided = isCollidedWithBoundary(copy, 11)
+            const outOfHealth = isOutOfHealth(copy);
+            if (!selfCollided && !boardCollided && !outOfHealth) {
+                outcomes.push(copy);
+            }
+        }
+        delete outcomes[i];
+    }
+    gameState.outcomes = outcomes
+    return gameState;
+}
+
+
+
 function move(snake, direction) {
     moveBody(snake.body)
     moveHead(snake.body[0], direction)
@@ -21,6 +68,15 @@ function moveBody(snake) {
     }
 }
 
+function didFindFood(theSnake, food) {
+    for (piece of food) {
+        if (piece.x === theSnake.x && piece.y === theSnake.y) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function isCollidedWithBodyPart(theSnake, allSnakes) {
     for (const snake of allSnakes) {
         for (const part of snake.body.slice(1)) {
@@ -41,47 +97,19 @@ function isCollidedWithBoundary(theSnake, boardSize) {
     }
 }
 
-
-function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(directions, turnsToLookAhead, mySnake) {
-    const outcomes = [mySnake];
-    for (let i = 0; i < outcomes.length; i++) {
-        const snake = outcomes[i];
-        if (snake.turns && snake.turns >= turnsToLookAhead) { break }
-        for (const direction of directions) {
-            const copy = JSON.parse(JSON.stringify(snake));
-            move(copy, direction)
-            copy.turns++
-            const selfCollided = isCollidedWithBodyPart(copy, [copy])
-            const boardCollided = isCollidedWithBoundary(copy, 11)
-            if (!selfCollided && !boardCollided) {
-                outcomes.push(copy);
-            }
-        }
-        delete outcomes[i];
-    }
-    return outcomes;
+function isOutOfHealth(theSnake) {
+    if (theSnake.health <= 0) return true
+    else return false;
 }
 
 
 
 
-const directions = ["up", "down", "left", "right"]
-function getSurvivalDirections(gameState) {
-    const mySnake = gameState.you;
-    mySnake.turns = 0;
-    const outcomes = getBreadthFirstOutcomesForAllDirectionsAfterNTurns(directions, 7, gameState.you);
-    const survivalDirections = {};
-    for (const direction of directions) { 
-        survivalDirections[direction] = function(){
-            return outcomes.filter(e=>e.originalDirection === direction).length
-        }()
-    }
-    return survivalDirections;
-}   
+
 
 
 if (typeof window !== "object") {
     module.exports = {
-        getSurvivalDirections
+        getGameStateWithTurnSimulation 
     }
 }
