@@ -172,7 +172,7 @@ describe('Food management', () => {
         expect(avoidOverfeedingDirections.down > 0).toEqual(true);
     })
 
-    test('with an overfed tolerance set, when faced with only non-death options that will overfeed, will fall back to survival and ake one of those', () => {
+    test('with an overfed tolerance set, when faced with only non-death options that will overfeed, will fall back to survival and take one of those', () => {
         const gameState = {
             board: {
                 height: 11,
