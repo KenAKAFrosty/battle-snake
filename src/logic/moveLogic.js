@@ -35,6 +35,4 @@ function getOppositeDirection(direction){
 
 module.exports = { 
     getMove,
-    getValueScoresOfAllDirectionsFrom,
-    getDirectionWithLargestValueScore
 }
