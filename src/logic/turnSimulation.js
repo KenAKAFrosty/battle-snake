@@ -107,7 +107,7 @@ function isCollidedWithBoundary(theSnake, boardSize) {
 }
 
 function isOutOfHealth(theSnake) {
-    if (theSnake.health < 0) return true
+    if (theSnake.health <= 0) return true
     else return false;
 }
 
