@@ -74,7 +74,7 @@ function getSurvivalDirections(gameState) {
     for (const direction of directions) { 
         survivalDirections[direction] = function(){
             return outcomes.filter(e=>e.originalDirection === direction).length
-        }
+        }()
     }
     return survivalDirections;
 }   
