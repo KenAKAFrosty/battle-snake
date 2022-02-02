@@ -28,7 +28,7 @@ function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, ga
             } else { 
                 if (ateLastRound[copy.id]) delete ateLastRound[copy.id]
             }
-            const selfCollided = isCollidedWithBodyPart(copy, [gameState.board.snakes])
+            const selfCollided = isCollidedWithBodyPart(copy, gameState.board.snakes)
             const boardCollided = isCollidedWithBoundary(copy, gameState.board.width)
             const outOfHealth = isOutOfHealth(copy);
             
