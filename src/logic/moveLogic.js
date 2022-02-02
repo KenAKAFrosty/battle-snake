@@ -1,5 +1,5 @@
 const { getGameStateWithTurnSimulation } = require("./turnSimulation.js");
-
+const directions = ["up","down","left","right"]
 
 function getMove(gameState){ 
     gameState = getGameStateWithTurnSimulation(gameState);
