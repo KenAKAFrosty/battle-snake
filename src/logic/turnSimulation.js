@@ -3,7 +3,7 @@ const directions = ["up", "down", "left", "right"]
 function getGameStateWithTurnSimulation(gameState) {
     const mySnake = gameState.you;
     mySnake.turns = 0;
-    gameState = getBreadthFirstOutcomesForAllDirectionsAfterNTurns(7, gameState);
+    gameState = getBreadthFirstOutcomesForAllDirectionsAfterNTurns(6, gameState);
     return gameState;
 }
 
@@ -15,6 +15,7 @@ function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, ga
         for (const direction of directions) {
             let ateLastRound = outcomes[i].ateLastRound;
             let overfed = outcomes[i].overfed;
+            let ateFood = outcomes[i].ateFood;
             const copy = JSON.parse(JSON.stringify(snake));
             copy.health--
             move(copy, direction, ateLastRound)
@@ -25,6 +26,7 @@ function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, ga
                 copy.health += 100 
                 ateLastRound[copy.id] = true;
                 overfed = isOverfed(copy,gameState.overfeedTolerance);
+                ateFood = true;
             } else { 
                 if (ateLastRound[copy.id]) delete ateLastRound[copy.id]
             }
@@ -34,7 +36,7 @@ function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, ga
             
             if (!selfCollided && !boardCollided && !outOfHealth) {
                 if (copy.health>99) {copy.health = 99}
-                outcomes.push({snake:copy, ateLastRound, overfed});
+                outcomes.push({snake:copy, ateLastRound, overfed, ateFood});
             }
         }
 

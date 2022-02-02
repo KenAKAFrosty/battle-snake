@@ -5,8 +5,8 @@ function getMove(gameState){
     gameState = getGameStateWithTurnSimulation(gameState);
     const allOutcomes = gameState.outcomes; 
 
-    const avoidOverfeeding = allOutcomes.filter(e=> !e.overfed);
-    const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(avoidOverfeeding);
+    const prioritizeEatingButAvoidOverfeeding = allOutcomes.filter(e=> !e.overfed && e.ateFood);
+    const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(prioritizeEatingButAvoidOverfeeding);
     const bestNotOverfedChoice = getBestChoiceFromDirectionValues(avoidOverfeedingDirections);
     console.log(avoidOverfeedingDirections)
     if (bestNotOverfedChoice) { return bestNotOverfedChoice }
