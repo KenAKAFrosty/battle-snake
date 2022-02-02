@@ -1,12 +1,3 @@
-const { 
-    getEmptyBoardMap, 
-    getBoardMapWithOutOfBoundsApplied, 
-    getBoardMapWithSnakeOccupantsApplied, 
-    getBoardMapWithSnakeValueScoresApplied, 
-    getBoardMapWithFoodApplied,
-    getBoardMapWithHealthierEnemiesWeightedNegative,
-    applyNegativeValueScoreToCurledEmptySpace
-} = require('./logic/boardMapping.js');
 
 const { getMove } = require('./logic/moveLogic.js');
 
@@ -31,16 +22,8 @@ function end(gameState) {
 }
 
 function move(gameState) {
-    let boardMap = getEmptyBoardMap(gameState.board.height);
-    boardMap = getBoardMapWithOutOfBoundsApplied(boardMap, -15);
-    boardMap = getBoardMapWithSnakeOccupantsApplied(boardMap, gameState.board.snakes);
-    boardMap = getBoardMapWithSnakeValueScoresApplied(boardMap);
-    boardMap = getBoardMapWithFoodApplied(boardMap, gameState.board.food);
-    boardMap = getBoardMapWithHealthierEnemiesWeightedNegative(boardMap,gameState.board.snakes,gameState.you);
-    boardMap = applyNegativeValueScoreToCurledEmptySpace(boardMap,gameState.you.body)
 
-    
-    const move = getMove(boardMap, gameState.you);
+    const move = getMove(gameState);
     const response = { 
         move
     }
@@ -54,3 +37,4 @@ module.exports = {
     move: move,
     end: end
 }
+

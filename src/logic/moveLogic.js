@@ -1,61 +1,12 @@
+const { getSurvivalDirections } = require("./turnSimulation.js");
 
-function getMove(boardMap, mySnake){ 
-    let valueScores = getValueScoresOfAllDirectionsFrom(mySnake.body[0], boardMap);
-    valueScores = applySlightPositiveToFacingDirection(valueScores, mySnake)
-    const directionToMove = getDirectionWithLargestValueScore(valueScores);
-    return directionToMove;
-}
 
-function getValueScoresOfAllDirectionsFrom(coordinateObject, boardMap){ 
-    const allDirections =  { 
-        "up":0,
-        "down":0,
-        "right":0,
-        "left":0
-    }
-    for (direction in allDirections){ 
-        const coordinateString = getCoordinateStringOfDirectionFromCoordinateObject(direction, coordinateObject);
-        const valueScore = boardMap[coordinateString].valueScore;
-        allDirections[direction] = valueScore;
-    }
-    return allDirections
+function getMove(gameState){ 
+    const survivalDirections = getSurvivalDirections(gameState);
+    console.log(survivalDirections);
 }
 
 
-function getCoordinateStringOfDirectionFromCoordinateObject(direction, coordinateObject) { 
-    return { 
-        "up":function(){
-            return coordinateObject.x + "," + (coordinateObject.y+1)
-        },
-        "down":function(){
-            return coordinateObject.x + "," + (coordinateObject.y-1)
-        },
-        "right":function(){
-            return (coordinateObject.x + 1) + "," + coordinateObject.y
-        },
-        "left":function(){
-            return (coordinateObject.x - 1) + "," + coordinateObject.y
-        },
-    } [direction]()
-}
-
-
-function getDirectionWithLargestValueScore(valueScores){ 
-    const max = Math.max(...Object.values(valueScores));
-    for (direction in valueScores){ 
-        if (valueScores[direction] === max){ 
-            return direction;
-        }
-    }
-    return null;
-}
-
-
-function applySlightPositiveToFacingDirection(valueScores, mySnake){ 
-    const directionFacing = getDirectionFacing(mySnake);
-    if (directionFacing){ valueScores[directionFacing] += 1; }
-    return valueScores;
-}
 
 function getDirectionFacing(snake){ 
     const head = snake.body[0];
@@ -80,7 +31,6 @@ function getOppositeDirection(direction){
         "down":"up"
     }[direction]
 }
-
 
 
 module.exports = { 
