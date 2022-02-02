@@ -26,7 +26,7 @@ function end(gameState) {
 
 function move(gameState) {
     gameState.ateLastRound = ateLastRound;
-    console.log(gameState)
+    gameState.overfeedTolerance = 5;
     const move = getMove(gameState);
     const response = { 
         move
