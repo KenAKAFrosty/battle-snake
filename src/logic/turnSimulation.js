@@ -3,7 +3,7 @@ const directions = ["up", "down", "left", "right"]
 function getGameStateWithTurnSimulation(gameState) {
     const mySnake = gameState.you;
     mySnake.turns = 0;
-    const gameStateWithOutcomes = getBreadthFirstOutcomesForAllDirectionsAfterNTurns(directions, 7, gameState.you);
+    const gameStateWithOutcomes = getBreadthFirstOutcomesForAllDirectionsAfterNTurns(directions, 7, gameState);
     const survivalDirections = {};
     for (const direction of directions) {
         survivalDirections[direction] = function () {
