@@ -17,6 +17,18 @@ function getMove(gameState){
     return choice;
 }
 
+function getIdsOfSnakesWhoAteThisRound(gameState){ 
+    const ids = [];
+    for (const snake of gameState.board.snakes){ 
+        const head = snake.body[0];
+        for (const piece of gameState.board.food){ 
+            if (head.x === piece.x && head.y === piece.y){ 
+                ids.push(snake.id)
+            }
+        }
+    }
+}
+
 
 
 function getDirectionFacing(snake){ 
@@ -46,4 +58,5 @@ function getOppositeDirection(direction){
 
 module.exports = { 
     getMove,
+    getIdsOfSnakesWhoAteThisRound
 }

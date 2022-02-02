@@ -1,5 +1,5 @@
 
-const { getMove } = require('./logic/moveLogic.js');
+const { getMove, getIdsOfSnakesWhoAteThisRound } = require('./logic/moveLogic.js');
 
 function info() {
     console.log("INFO")
@@ -14,8 +14,9 @@ function info() {
 }
 
 
-
+let ateLastRound = {};
 function start(gameState) {
+    ateLastRound = {};
     console.log(`${gameState.game.id} START`)
 }
 
@@ -24,10 +25,15 @@ function end(gameState) {
 }
 
 function move(gameState) {
-
+    gameState.ateLastRound = ateLastRound;
     const move = getMove(gameState);
     const response = { 
         move
+    }
+    ateLastRound = {};
+    const ids = getIdsOfSnakesWhoAteThisRound(gameState);
+    for (const id of ids){ 
+        ateLastRound[id] = true;
     }
     console.log(`${gameState.game.id} MOVE ${gameState.turn}: ${response.move}`)
     return response
