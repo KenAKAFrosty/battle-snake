@@ -5,15 +5,13 @@ function getMove(gameState){
     gameState = getGameStateWithTurnSimulation(gameState);
     const allOutcomes = gameState.outcomes; 
 
-    const avoidOverfeeding = allOutcomes.filter(e=> !e.snake.overfed);
+    const avoidOverfeeding = allOutcomes.filter(e=> !e.overfed);
     const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(avoidOverfeeding);
     const bestNotOverfedChoice = getBestChoiceFromDirectionValues(avoidOverfeedingDirections);
-    console.log(avoidOverfeedingDirections)
     if (bestNotOverfedChoice) { return bestNotOverfedChoice }
 
     const survivalDirections = getDirectionValuesFromOutcomes(allOutcomes);
     const bestSurvivalChoice = getBestChoiceFromDirectionValues(survivalDirections);
-    console.log(survivalDirections);
     return bestSurvivalChoice;
 }
 

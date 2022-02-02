@@ -1,9 +1,9 @@
 const { info, move } = require('../src/commandHandlingAndMetadata');
 const { getDirectionValuesFromOutcomes,
-        getBestChoiceFromDirectionValues } = require('../src/logic/moveLogic');
+    getBestChoiceFromDirectionValues } = require('../src/logic/moveLogic');
 const { getGameStateWithTurnSimulation } = require('../src/logic/turnSimulation')
 
-function createGameState(myBattlesnake,boardHeightAndWidth) {
+function createGameState(myBattlesnake, boardHeightAndWidth) {
     return {
         game: {
             id: "",
@@ -53,8 +53,8 @@ describe('Battlesnake Basic Death Prevention', () => {
         expect(allowedMoves).toContain(moveResponse.move)
     })
 
-    test(`Battlesnake doesn't move out of bounds`, ()=> { 
-        const facingDownInBottomLeftCorner = [ {x:0,y:0}, {x:0,y:1}, {x:0,y:2}, {x:0,y:3} ]
+    test(`Battlesnake doesn't move out of bounds`, () => {
+        const facingDownInBottomLeftCorner = [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: 0, y: 3 }]
         const me = createBattlesnake("me", facingDownInBottomLeftCorner);
         const gameState = createGameState(me, 11);
         gameState.ateLastRound = {}
@@ -65,68 +65,157 @@ describe('Battlesnake Basic Death Prevention', () => {
 })
 
 
-describe('Food management', ()=> { 
-    test('with only 1 health left and immediately adjacent to food above it, with no other threats, should grab food and nothing else', ()=> { 
+describe('Food management', () => {
+    test('with only 1 health left and immediately adjacent to food above it, with no other threats, should grab food and nothing else', () => {
         const gameState = {
-            id:"tester",
-            board:{
-                height:11,
-                width:11
+            id: "tester",
+            board: {
+                height: 11,
+                width: 11
             },
-            you:{
-                body:[
-                    {x:2,y:1},
-                    {x:3,y:1},
-                    {x:4,y:1},
+            you: {
+                body: [
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                    { x: 4, y: 1 },
                 ],
-                health:1
+                health: 1
             },
-            board:{
-                food:[
-                    {x:2,y:2}
+            board: {
+                food: [
+                    { x: 2, y: 2 }
                 ]
             },
-            ateLastRound:{}
+            ateLastRound: {}
         }
         const updatedGameState = getGameStateWithTurnSimulation(gameState);
         const directions = getDirectionValuesFromOutcomes(updatedGameState.outcomes)
-        expect(directions.up > 0 ).toEqual(true);
+        expect(directions.up > 0).toEqual(true);
         expect(directions.left === 0).toEqual(true);
         expect(directions.right === 0).toEqual(true);
         expect(directions.down === 0).toEqual(true);
     })
 
-    test('is aware that eating will cause elongation, tail is not safe the round after eating', ()=> {
+    test('is aware that eating will cause elongation, tail is not safe the round after eating', () => {
         const gameState = {
-            board:{
-                height:11,
-                width:11
+            board: {
+                height: 11,
+                width: 11
             },
-            you:{
-                id:"tester",
-                body:[
-                    {x:2,y:1},
-                    {x:3,y:1},
-                    {x:4,y:1},
-                    {x:4,y:2},
-                    {x:3,y:2},
-                    {x:2,y:2}
+            you: {
+                id: "tester",
+                body: [
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                    { x: 4, y: 1 },
+                    { x: 4, y: 2 },
+                    { x: 3, y: 2 },
+                    { x: 2, y: 2 }
                 ],
-                health:100
+                health: 100
             },
-            board:{
-                food:[{x:1,y:1}]
+            board: {
+                food: [{ x: 1, y: 1 }]
             },
-            ateLastRound:{
-                "tester":true
+            ateLastRound: {
+                "tester": true
             },
-            overfeedTolerance:100
+            overfeedTolerance: 100
         }
 
         const updatedGameState = getGameStateWithTurnSimulation(gameState);
         const directions = getDirectionValuesFromOutcomes(updatedGameState.outcomes)
-        expect(directions.up === 0 ).toEqual(true);
-        expect(directions.left > 0 ).toEqual(true);
-        expect(directions.down > 0 ).toEqual(true);
+        expect(directions.up === 0).toEqual(true);
+        expect(directions.left > 0).toEqual(true);
+        expect(directions.down > 0).toEqual(true);
+    })
+
+    test('with an overfed tolerance set, will not grab nearby food if full', () => {
+        const gameState = {
+            board: {
+                height: 11,
+                width: 11
+            },
+            you: {
+                id: "tester",
+                body: [
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                    { x: 4, y: 1 },
+                    { x: 4, y: 2 },
+                    { x: 3, y: 2 },
+                    { x: 2, y: 2 }
+                ],
+                health: 100
+            },
+            board: {
+                food: [{ x: 1, y: 1 }]
+            },
+            ateLastRound: {
+                "tester": true
+            },
+            overfeedTolerance: 5
+        }
+
+        const updatedGameState = getGameStateWithTurnSimulation(gameState);
+        const allOutcomes = updatedGameState.outcomes;
+        const avoidOverfeeding = allOutcomes.filter(e => !e.overfed);
+        const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(avoidOverfeeding);
+        const bestNotOverfedChoice = getBestChoiceFromDirectionValues(avoidOverfeedingDirections);
+
+        const survivalDirections = getDirectionValuesFromOutcomes(allOutcomes);
+        const bestSurvivalChoice = getBestChoiceFromDirectionValues(survivalDirections);
+
+        expect(avoidOverfeedingDirections.up === 0).toEqual(true);
+        expect(avoidOverfeedingDirections.left === 0).toEqual(true);
+        expect(avoidOverfeedingDirections.right === 0).toEqual(true);
+        expect(avoidOverfeedingDirections.down > 0).toEqual(true);
+    })
+
+    test('with an overfed tolerance set, when faced with only non-death options that will overfeed, will fall back to survival and ake one of those', () => {
+        const gameState = {
+            board: {
+                height: 11,
+                width: 11
+            },
+            you: {
+                id: "tester",
+                body: [
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                    { x: 4, y: 1 },
+                    { x: 4, y: 2 },
+                    { x: 3, y: 2 },
+                    { x: 2, y: 2 }
+                ],
+                health: 100
+            },
+            board: {
+                food: [
+                    { x: 1, y: 1 },
+                    { x: 2, y: 0 }
+                ]
+            },
+            ateLastRound: {
+                "tester": true
+            },
+            overfeedTolerance: 5
+        }
+
+        let directions;
+        const updatedGameState = getGameStateWithTurnSimulation(gameState);
+        const allOutcomes = updatedGameState.outcomes;
+        const avoidOverfeeding = allOutcomes.filter(e => !e.overfed);
+        const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(avoidOverfeeding);
+        const bestNotOverfedChoice = getBestChoiceFromDirectionValues(avoidOverfeedingDirections);
+        if (bestNotOverfedChoice) { directions = avoidOverfeedingDirections } else {
+            const survivalDirections = getDirectionValuesFromOutcomes(allOutcomes);
+            directions = survivalDirections
+        }
+
+        expect(directions.up === 0).toEqual(true);
+        expect(directions.left > 0).toEqual(true);
+        expect(directions.right === 0).toEqual(true);
+        expect(directions.down > 0).toEqual(true);
     })
 })
