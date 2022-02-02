@@ -13,7 +13,7 @@ function getMove(gameState){
             choice = key;
         }
     }
-    return key;
+    return choice;
 }
 
 
