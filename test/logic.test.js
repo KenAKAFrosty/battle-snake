@@ -1,5 +1,6 @@
 const { info, move } = require('../src/commandHandlingAndMetadata');
-const { } = require('../src/logic/moveLogic');
+const { getDirectionValuesFromOutcomes,
+        getBestChoiceFromDirectionValues } = require('../src/logic/moveLogic');
 const { getGameStateWithTurnSimulation } = require('../src/logic/turnSimulation')
 
 function createGameState(myBattlesnake,boardHeightAndWidth) {
@@ -88,7 +89,7 @@ describe('Food management', ()=> {
             ateLastRound:{}
         }
         const updatedGameState = getGameStateWithTurnSimulation(gameState);
-        const directions = updatedGameState.survivalDirections;
+        const directions = getDirectionValuesFromOutcomes(updatedGameState.outcomes)
         expect(directions.up > 0 ).toEqual(true);
         expect(directions.left === 0).toEqual(true);
         expect(directions.right === 0).toEqual(true);
@@ -123,7 +124,7 @@ describe('Food management', ()=> {
         }
 
         const updatedGameState = getGameStateWithTurnSimulation(gameState);
-        const directions = updatedGameState.survivalDirections;
+        const directions = getDirectionValuesFromOutcomes(updatedGameState.outcomes)
         expect(directions.up === 0 ).toEqual(true);
         expect(directions.left > 0 ).toEqual(true);
         expect(directions.down > 0 ).toEqual(true);

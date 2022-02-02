@@ -4,11 +4,6 @@ function getGameStateWithTurnSimulation(gameState) {
     const mySnake = gameState.you;
     mySnake.turns = 0;
     gameState = getBreadthFirstOutcomesForAllDirectionsAfterNTurns(7, gameState);
-    const survivalDirections = {};
-    for (const direction of directions) {
-        survivalDirections[direction] = gameState.outcomes.filter(e => e.snake.originalDirection === direction).length
-    }
-    gameState.survivalDirections = survivalDirections
     return gameState;
 }
 
@@ -34,7 +29,7 @@ function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, ga
             const selfCollided = isCollidedWithBodyPart(copy, [copy])
             const boardCollided = isCollidedWithBoundary(copy, gameState.board.width)
             const outOfHealth = isOutOfHealth(copy);
-            const overfed = isOverfed(copy,gameState.overfeedTolerance)
+            const overfed = isOverfed(copy,gameState.overfeedTolerance);
             if (!selfCollided && !boardCollided && !outOfHealth) {
                 if (copy.health>99) {copy.health = 99}
                 outcomes.push({snake:copy, ateLastRound, overfed});
@@ -115,7 +110,6 @@ function isOutOfHealth(theSnake) {
 }
 
 function isOverfed(theSnake,overfeedTolerance){
-    overfeedTolerance = overfeedTolerance || 100
     if (theSnake.health < 100) return false; 
     if ( (theSnake.health - 100) > overfeedTolerance ) return true
     else return false;

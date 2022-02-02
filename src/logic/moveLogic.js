@@ -8,10 +8,12 @@ function getMove(gameState){
     const avoidOverfeeding = allOutcomes.filter(e=> !e.snake.overfed);
     const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(avoidOverfeeding);
     const bestNotOverfedChoice = getBestChoiceFromDirectionValues(avoidOverfeedingDirections);
+    console.log(avoidOverfeedingDirections)
     if (bestNotOverfedChoice) { return bestNotOverfedChoice }
 
     const survivalDirections = getDirectionValuesFromOutcomes(allOutcomes);
     const bestSurvivalChoice = getBestChoiceFromDirectionValues(survivalDirections);
+    console.log(survivalDirections);
     return bestSurvivalChoice;
 }
 
@@ -79,5 +81,7 @@ function getOppositeDirection(direction){
 
 module.exports = { 
     getMove,
-    getIdsOfSnakesWhoAteThisRound
+    getIdsOfSnakesWhoAteThisRound,
+    getDirectionValuesFromOutcomes,
+    getBestChoiceFromDirectionValues
 }
