@@ -26,7 +26,7 @@ function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, ga
             ateLastRound = {};
             const foundFood = didFindFood(copy, gameState.board.food)
             if (foundFood) { 
-                copy.health = 100 
+                copy.health += 100 
                 ateLastRound[copy.id] = true;
             } else { 
                 if (ateLastRound[copy.id]) delete ateLastRound[copy.id]
@@ -34,7 +34,9 @@ function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, ga
             const selfCollided = isCollidedWithBodyPart(copy, [copy])
             const boardCollided = isCollidedWithBoundary(copy, gameState.board.width)
             const outOfHealth = isOutOfHealth(copy);
-            if (!selfCollided && !boardCollided && !outOfHealth) {
+            const overfed = isOverfed(copy,gameState.overfeedTolerance)
+            if (!selfCollided && !boardCollided && !outOfHealth && !overfed) {
+                if (copy.health>100){copy.health = 100}
                 outcomes.push({snake:copy, ateLastRound});
             }
         }
@@ -112,7 +114,11 @@ function isOutOfHealth(theSnake) {
     else return false;
 }
 
-
+function isOverfed(theSnake,overfeedTolerance){ 
+    if (theSnake.health < 100) return false; 
+    if ( (theSnake.health - 100) > overfeedTolerance ) return true
+    else return false;
+}
 
 
 

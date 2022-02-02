@@ -118,7 +118,8 @@ describe('Food management', ()=> {
             },
             ateLastRound:{
                 "tester":true
-            }
+            },
+            overfeedTolerance:100
         }
 
         const updatedGameState = getGameStateWithTurnSimulation(gameState);
