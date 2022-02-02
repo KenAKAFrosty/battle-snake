@@ -1,5 +1,6 @@
 const { info, move } = require('../src/commandHandlingAndMetadata');
 const { } = require('../src/logic/moveLogic');
+const { getGameStateWithTurnSimulation } = require('../src/logic/turnSimulation')
 
 function createGameState(myBattlesnake,boardHeightAndWidth) {
     return {
@@ -24,7 +25,7 @@ function createBattlesnake(id, bodyCoords) {
     return {
         id: id,
         name: id,
-        health: 0,
+        health: 100,
         body: bodyCoords,
         latency: "",
         head: bodyCoords[0],
@@ -57,5 +58,36 @@ describe('Battlesnake Basic Death Prevention', () => {
         const moveResponse = move(gameState);
         const allowedMoves = ["right"];
         expect(allowedMoves).toContain(moveResponse.move);
+    })
+})
+
+
+describe('Food management', ()=> { 
+    test('with only 1 health left and immediately adjacent to food above it, with no other threats, should grab food and nothing else', ()=> { 
+        const gameState = {
+            board:{
+                height:11,
+                width:11
+            },
+            you:{
+                body:[
+                    {x:2,y:1},
+                    {x:3,y:1},
+                    {x:4,y:1},
+                ],
+                health:1
+            },
+            board:{
+                food:[
+                    {x:2,y:2}
+                ]
+            }
+        }
+        const updatedGameState = getGameStateWithTurnSimulation(gameState);
+        const directions = updatedGameState.survivalDirections;
+        expect(directions.up > 0 ).toEqual(true);
+        expect(directions.left === 0).toEqual(true);
+        expect(directions.right === 0).toEqual(true);
+        expect(directions.down === 0).toEqual(true);
     })
 })

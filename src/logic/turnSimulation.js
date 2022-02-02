@@ -3,35 +3,31 @@ const directions = ["up", "down", "left", "right"]
 function getGameStateWithTurnSimulation(gameState) {
     const mySnake = gameState.you;
     mySnake.turns = 0;
-    const gameStateWithOutcomes = getBreadthFirstOutcomesForAllDirectionsAfterNTurns(directions, 7, gameState);
+    gameState = getBreadthFirstOutcomesForAllDirectionsAfterNTurns(7, gameState);
     const survivalDirections = {};
     for (const direction of directions) {
-        survivalDirections[direction] = function () {
-            return gameStateWithOutcomes.outcomes.filter(e => e.originalDirection === direction).length
-        }()
+        survivalDirections[direction] = gameState.outcomes.filter(e => e.originalDirection === direction).length
     }
     gameState.survivalDirections = survivalDirections
     return gameState;
 }
 
-function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(directions, turnsToLookAhead, gameState) {
+function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, gameState) {
     const outcomes = [gameState.you];
     for (let i = 0; i < outcomes.length; i++) {
         const snake = outcomes[i];
         if (snake.turns && snake.turns >= turnsToLookAhead) { break }
         for (const direction of directions) {
             const copy = JSON.parse(JSON.stringify(snake));
+            copy.health--
             move(copy, direction)
             copy.turns++
-            copy.health--
             const foundFood = didFindFood(copy, gameState.board.food)
             if (foundFood) {
-                health = 100
-                if (!gameState.ateFoodThisRound) { gameState['ateFoodThisRound'] = [] }
-                gameState.ateFoodThisRound.push(copy.id);
+                copy.health = 100
             }
             const selfCollided = isCollidedWithBodyPart(copy, [copy])
-            const boardCollided = isCollidedWithBoundary(copy, 11)
+            const boardCollided = isCollidedWithBoundary(copy, gameState.board.width)
             const outOfHealth = isOutOfHealth(copy);
             if (!selfCollided && !boardCollided && !outOfHealth) {
                 outcomes.push(copy);
@@ -69,8 +65,8 @@ function moveBody(snake) {
 }
 
 function didFindFood(theSnake, food) {
-    for (piece of food) {
-        if (piece.x === theSnake.x && piece.y === theSnake.y) {
+    for (const piece of food) {
+        if (piece.x === theSnake.body[0].x && piece.y === theSnake.body[0].y) {
             return true;
         }
     }
@@ -98,7 +94,7 @@ function isCollidedWithBoundary(theSnake, boardSize) {
 }
 
 function isOutOfHealth(theSnake) {
-    if (theSnake.health <= 0) return true
+    if (theSnake.health < 0) return true
     else return false;
 }
 
@@ -110,6 +106,7 @@ function isOutOfHealth(theSnake) {
 
 if (typeof window !== "object") {
     module.exports = {
-        getGameStateWithTurnSimulation 
+        getGameStateWithTurnSimulation,
+        getBreadthFirstOutcomesForAllDirectionsAfterNTurns
     }
 }
