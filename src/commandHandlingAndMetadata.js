@@ -26,6 +26,7 @@ function end(gameState) {
 
 function move(gameState) {
     gameState.ateLastRound = ateLastRound;
+    console.log(gameState)
     const move = getMove(gameState);
     const response = { 
         move

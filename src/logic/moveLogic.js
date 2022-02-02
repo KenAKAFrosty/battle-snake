@@ -27,6 +27,7 @@ function getIdsOfSnakesWhoAteThisRound(gameState){
             }
         }
     }
+    return ids;
 }
 
 
