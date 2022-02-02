@@ -8,7 +8,7 @@ function getMove(gameState){
     let maxValue = 0
     for (key in survivalDirections){ 
         const value = survivalDirections[key];
-        if (value > choice.maxValue) { 
+        if (value > maxValue) { 
             maxValue = value;
             choice = key;
         }
