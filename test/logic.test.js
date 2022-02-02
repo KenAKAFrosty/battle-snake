@@ -45,7 +45,8 @@ describe('Battlesnake API Version', () => {
 describe('Battlesnake Basic Death Prevention', () => {
     test('should never move into its own neck', () => {
         const me = createBattlesnake("me", [{ x: 2, y: 1 }, { x: 1, y: 1 }, { x: 0, y: 1 }])
-        const gameState = createGameState(me, 7)
+        const gameState = createGameState(me, 7);
+        gameState.ateLastRound = {}
         const moveResponse = move(gameState)
         const allowedMoves = ["up", "down", "right"]
         expect(allowedMoves).toContain(moveResponse.move)
@@ -55,6 +56,7 @@ describe('Battlesnake Basic Death Prevention', () => {
         const facingDownInBottomLeftCorner = [ {x:0,y:0}, {x:0,y:1}, {x:0,y:2}, {x:0,y:3} ]
         const me = createBattlesnake("me", facingDownInBottomLeftCorner);
         const gameState = createGameState(me, 11);
+        gameState.ateLastRound = {}
         const moveResponse = move(gameState);
         const allowedMoves = ["right"];
         expect(allowedMoves).toContain(moveResponse.move);
@@ -65,6 +67,7 @@ describe('Battlesnake Basic Death Prevention', () => {
 describe('Food management', ()=> { 
     test('with only 1 health left and immediately adjacent to food above it, with no other threats, should grab food and nothing else', ()=> { 
         const gameState = {
+            id:"tester",
             board:{
                 height:11,
                 width:11
@@ -81,7 +84,8 @@ describe('Food management', ()=> {
                 food:[
                     {x:2,y:2}
                 ]
-            }
+            },
+            ateLastRound:{}
         }
         const updatedGameState = getGameStateWithTurnSimulation(gameState);
         const directions = updatedGameState.survivalDirections;
@@ -89,5 +93,38 @@ describe('Food management', ()=> {
         expect(directions.left === 0).toEqual(true);
         expect(directions.right === 0).toEqual(true);
         expect(directions.down === 0).toEqual(true);
+    })
+
+    test('is aware that eating will cause elongation, tail is not safe the round after eating', ()=> {
+        const gameState = {
+            board:{
+                height:11,
+                width:11
+            },
+            you:{
+                id:"tester",
+                body:[
+                    {x:2,y:1},
+                    {x:3,y:1},
+                    {x:4,y:1},
+                    {x:4,y:2},
+                    {x:3,y:2},
+                    {x:2,y:2}
+                ],
+                health:100
+            },
+            board:{
+                food:[{x:1,y:1}]
+            },
+            ateLastRound:{
+                "tester":true
+            }
+        }
+
+        const updatedGameState = getGameStateWithTurnSimulation(gameState);
+        const directions = updatedGameState.survivalDirections;
+        expect(directions.up === 0 ).toEqual(true);
+        expect(directions.left > 0 ).toEqual(true);
+        expect(directions.down > 0 ).toEqual(true);
     })
 })
