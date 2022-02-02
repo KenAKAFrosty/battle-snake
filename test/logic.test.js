@@ -1,10 +1,5 @@
 const { info, move } = require('../src/commandHandlingAndMetadata');
-const { 
-    getCoordinateStringOfDirectionFromCoordinateObject,
-} = require('../src/logic/moveLogic');
-const { 
-    
-} = require('../src/logic/boardMapping.js');
+const { } = require('../src/logic/moveLogic');
 
 function createGameState(myBattlesnake,boardHeightAndWidth) {
     return {
@@ -64,15 +59,3 @@ describe('Battlesnake Basic Death Prevention', () => {
         expect(allowedMoves).toContain(moveResponse.move);
     })
 })
-
-
-describe('Move utilities', ()=> { 
-    test('getCoordinateStringOfDirection', ()=> { 
-        expect(getCoordinateStringOfDirectionFromCoordinateObject("up",{x:5,y:6})).toEqual("5,7")
-        expect(getCoordinateStringOfDirectionFromCoordinateObject("down",{x:5,y:6})).toEqual("5,5")
-        expect(getCoordinateStringOfDirectionFromCoordinateObject("right",{x:5,y:6})).toEqual("6,6")
-        expect(getCoordinateStringOfDirectionFromCoordinateObject("left",{x:5,y:6})).toEqual("4,6")
-    });
-})
-
-
