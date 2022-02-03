@@ -3,17 +3,18 @@ const directions = ["up","down","left","right"]
 
 function getMove(gameState){ 
     gameState = getGameStateWithTurnSimulation(gameState);
-    const allOutcomes = gameState.outcomes; 
-
-    const prioritizeEatingButAvoidOverfeeding = allOutcomes.filter(e=> !e.overfed && e.ateFood);
+    const directionOutcomes = gameState.outcomes; 
+    
+    const prioritizeEatingButAvoidOverfeeding = {}
+    for (const direction in directionOutcomes) {
+        prioritizeEatingButAvoidOverfeeding[direction] = directionOutcomes[direction].filter(e=> !e.overfed && e.ateFood)
+    }
     const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(prioritizeEatingButAvoidOverfeeding);
     const bestNotOverfedChoice = getBestChoiceFromDirectionValues(avoidOverfeedingDirections);
-    console.log(avoidOverfeedingDirections)
     if (bestNotOverfedChoice) { return bestNotOverfedChoice }
 
-    const survivalDirections = getDirectionValuesFromOutcomes(allOutcomes);
+    const survivalDirections = getDirectionValuesFromOutcomes(directionOutcomes);
     const bestSurvivalChoice = getBestChoiceFromDirectionValues(survivalDirections);
-    console.log(survivalDirections);
     return bestSurvivalChoice;
 }
 
@@ -32,11 +33,11 @@ function getIdsOfSnakesWhoAteThisRound(gameState){
 
 
 function getDirectionValuesFromOutcomes(outcomes){ 
-    const directionValues = {};
-    for (const direction of directions) {
-        directionValues[direction] = outcomes.filter(e => e.snake.originalDirection === direction).length
+    let values = {}
+    for (const direction in outcomes){ 
+        values[direction] = outcomes[direction].length;
     }
-    return directionValues;
+    return values;
 }
 
 function getBestChoiceFromDirectionValues(directionValues){ 

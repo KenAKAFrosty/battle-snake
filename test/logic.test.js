@@ -101,7 +101,7 @@ describe('Food management', () => {
         const directions = getDirectionValuesFromOutcomes(updatedGameState.outcomes)
         expect(directions.up > 0).toEqual(true);
         expect(directions.left === 0).toEqual(true);
-        expect(directions.right === 0).toEqual(true);
+        expect(!directions.right).toEqual(true);
         expect(directions.down === 0).toEqual(true);
     })
 
@@ -149,7 +149,7 @@ describe('Food management', () => {
         expect(directions.down > 0).toEqual(true);
     })
 
-    test('with an overfed tolerance set, will not grab nearby food if full', () => {
+    test('with an overfeed tolerance set, will not grab nearby food if full', () => {
         const gameState = {
             you: {
                 id: "tester",
@@ -188,16 +188,15 @@ describe('Food management', () => {
 
         const updatedGameState = getGameStateWithTurnSimulation(gameState);
         const allOutcomes = updatedGameState.outcomes;
-        const avoidOverfeeding = allOutcomes.filter(e => !e.overfed);
+        const avoidOverfeeding = {}
+        for (direction in allOutcomes){ 
+            avoidOverfeeding[direction] = allOutcomes[direction].filter(e => !e.overfed);
+        }
         const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(avoidOverfeeding);
-        const bestNotOverfedChoice = getBestChoiceFromDirectionValues(avoidOverfeedingDirections);
-
-        const survivalDirections = getDirectionValuesFromOutcomes(allOutcomes);
-        const bestSurvivalChoice = getBestChoiceFromDirectionValues(survivalDirections);
-
+        console.log(avoidOverfeedingDirections)
         expect(avoidOverfeedingDirections.up === 0).toEqual(true);
         expect(avoidOverfeedingDirections.left === 0).toEqual(true);
-        expect(avoidOverfeedingDirections.right === 0).toEqual(true);
+        expect(!avoidOverfeedingDirections.right).toEqual(true);
         expect(avoidOverfeedingDirections.down > 0).toEqual(true);
     })
 
@@ -244,7 +243,10 @@ describe('Food management', () => {
         let directions;
         const updatedGameState = getGameStateWithTurnSimulation(gameState);
         const allOutcomes = updatedGameState.outcomes;
-        const avoidOverfeeding = allOutcomes.filter(e => !e.overfed);
+        const avoidOverfeeding = {}
+        for (direction in allOutcomes){ 
+            avoidOverfeeding[direction] = allOutcomes[direction].filter(e => !e.overfed);
+        }
         const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(avoidOverfeeding);
         const bestNotOverfedChoice = getBestChoiceFromDirectionValues(avoidOverfeedingDirections);
         if (bestNotOverfedChoice) { directions = avoidOverfeedingDirections } else {
@@ -254,7 +256,7 @@ describe('Food management', () => {
 
         expect(directions.up === 0).toEqual(true);
         expect(directions.left > 0).toEqual(true);
-        expect(directions.right === 0).toEqual(true);
+        expect(!directions.right).toEqual(true);
         expect(directions.down > 0).toEqual(true);
     })
 })

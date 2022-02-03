@@ -3,33 +3,49 @@ const defaultNumberOfTurnsToLookAhead = 7;
 
 function getGameStateWithTurnSimulation(gameState, turnsToLookAhead) {
     turnsToLookAhead = turnsToLookAhead || defaultNumberOfTurnsToLookAhead
-    const mySnake = gameState.you;
-    mySnake.turns = 0;
+    gameState.you.turns = 0;
     gameState = getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, gameState);
     return gameState;
 }
 
 function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, gameState) {
-    const outcomesArrays = { 
-        "up":[],
-        "left":[],
-        "right":[],
-        "down":[]
-    }
-    const outcomes = [{ snake: gameState.you, ateLastRound: gameState.ateLastRound }];
+    const initial = { snake: gameState.you, ateLastRound: gameState.ateLastRound }
+    const backwards = backwardsDirection(initial.snake);
 
-    for (let i = 0; i < outcomes.length; i++) {
-        const snake = outcomes[i].snake;
-        if (snake.turns && snake.turns >= turnsToLookAhead) { break }
-        for (const direction of directions) {
-            const backwards = backwardsDirection(snake);
-            if (direction === backwards) { continue }
-            processTurn(direction, snake,outcomes, i, gameState)
+    //initial setup for each original direction taken
+    let directionOutcomes = {}
+    for (const direction of directions){ 
+        if (direction !== backwards){ 
+            directionOutcomes[direction] = [initial]
+            directionOutcomes[direction]["i"] = 0;
+            processTurn(direction, initial.snake, directionOutcomes[direction],0,gameState);
+            directionOutcomes[direction].shift(); //the 0 element is still the current-state copy, we want that out now
         }
-        // delete outcomes[i];
     }
-    gameState.outcomes = outcomes
+
+
+    for (let turn = 1; turn < turnsToLookAhead; turn++) {
+        for (const direction of directions){ 
+                if (!directionOutcomes[direction]) {continue}
+
+                const outcomes = directionOutcomes[direction];
+                const startingLength = outcomes.length;
+
+                for (outcomes.i; outcomes.i < startingLength; outcomes.i++){ 
+                        const snake = outcomes[outcomes.i].snake;
+
+                        for (const directionToSimulate of directions){ 
+                                if (directionToSimulate === backwardsDirection(snake)) { continue };
+                                processTurn(directionToSimulate, snake, outcomes, outcomes.i, gameState);
+                                //this function pushes the new simulated next-turn copies into the outcomes array
+                        }
+                }  
+        }    
+    }
+    gameState.outcomes = directionOutcomes
     return gameState;
+    //NOTE doing -> for (direction in directionOutcomes){ }
+    // Would be Depth-First. Grab each key and iterate to completion of turn count, then go to next key
 }
 
 function processTurn(direction,snake,outcomes,i,gameState){ 
@@ -72,10 +88,36 @@ function backwardsDirection(snake) {
     return oppositeDirection;
 }
 
+function getDirectionFacing(snake) {
+    const head = snake.body[0];
+    const neck = snake.body[1]
+    if (neck.x < head.x) {
+        return "right"
+    } else if (neck.x > head.x) {
+        return "left"
+    } else if (neck.y < head.y) {
+        return "up"
+    } else if (neck.y > head.y) {
+        return "down"
+    }
+}
+
+
+function getOppositeDirection(direction) {
+    return {
+        "right": "left",
+        "left": "right",
+        "up": "down",
+        "down": "up"
+    }[direction]
+}
+
+
+
 function move(snake, direction, ateLastRound) {
     moveBody(snake, ateLastRound)
     moveHead(snake.body[0], direction)
-    if (!snake["originalDirection"]) snake["originalDirection"] = direction;
+    // if (!snake["originalDirection"]) snake["originalDirection"] = direction;
 }
 
 function moveHead(head, direction) {
@@ -141,31 +183,6 @@ function isOverfed(theSnake, overfeedTolerance) {
     if (theSnake.health < 100) return false;
     if ((theSnake.health - 100) > overfeedTolerance) return true
     else return false;
-}
-
-
-function getDirectionFacing(snake) {
-    const head = snake.body[0];
-    const neck = snake.body[1]
-    if (neck.x < head.x) {
-        return "right"
-    } else if (neck.x > head.x) {
-        return "left"
-    } else if (neck.y < head.y) {
-        return "up"
-    } else if (neck.y > head.y) {
-        return "down"
-    }
-}
-
-
-function getOppositeDirection(direction) {
-    return {
-        "right": "left",
-        "left": "right",
-        "up": "down",
-        "down": "up"
-    }[direction]
 }
 
 

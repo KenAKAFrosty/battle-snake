@@ -27,7 +27,10 @@ const gameState = {
 const [turns, outcomes] = howManyTurnsInUnder(400, gameState);
 console.log('turns:',turns);
 console.log('outcomes:',outcomes)
-// console.log(checkOutcomes(gameState,2))
+// const outcomes = checkOutcomes(gameState,8);
+// for (key in outcomes){
+//     console.log(key, outcomes[key].length);
+// }
 
 function howManyTurnsInUnder(milliseconds, gameState){ 
    
@@ -39,8 +42,10 @@ function howManyTurnsInUnder(milliseconds, gameState){
         const state = getGameStateWithTurnSimulation(gameState,i)
         const end = performance.now();
         const timeTaken = end-start;
-        outcomesLengths[i] = state.outcomes.length;
-        console.log(`${i} turns took ${timeTaken} milliseconds and produced ${state.outcomes.length} outcomes`)
+        let totalNumberOfOutcomes = 0;
+        for (key in state.outcomes){ totalNumberOfOutcomes += state.outcomes[key].length }
+        outcomesLengths[i] = totalNumberOfOutcomes;
+        console.log(`${i} turns took ${timeTaken} milliseconds and produced ${totalNumberOfOutcomes} outcomes`)
         if (timeTaken > milliseconds) { 
             numberOfTurns = i-1;
             break;
