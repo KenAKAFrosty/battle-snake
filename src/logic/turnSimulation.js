@@ -1,6 +1,7 @@
 const directions = ["up", "down", "left", "right"]
 const defaultNumberOfTurnsToLookAhead = 7;
 
+
 function getGameStateWithTurnSimulation(gameState, turnsToLookAhead) {
     turnsToLookAhead = turnsToLookAhead || defaultNumberOfTurnsToLookAhead
     gameState.you.turns = 0;
@@ -8,47 +9,53 @@ function getGameStateWithTurnSimulation(gameState, turnsToLookAhead) {
     return gameState;
 }
 
-function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, gameState) {
+async function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, gameState) {
     const initial = { snake: gameState.you, ateLastRound: gameState.ateLastRound }
     const backwards = backwardsDirection(initial.snake);
 
     //initial setup for each original direction taken
     let directionOutcomes = {}
-    for (const direction of directions){ 
-        if (direction !== backwards){ 
+    for (const direction of directions) {
+        if (direction !== backwards) {
             directionOutcomes[direction] = [initial]
             directionOutcomes[direction]["i"] = 0;
-            processTurn(direction, initial.snake, directionOutcomes[direction],0,gameState);
+            processTurn(direction, directionOutcomes[direction], 0, gameState);
             directionOutcomes[direction].shift(); //the 0 element is still the current-state copy, we want that out now
         }
     }
 
+    let laggingDirection = "";
+    for (let turn = 1; turn < turnsToLookAhead; turn++) { //remove this for depth first
+        for (const direction of directions) {
+            if (!directionOutcomes[direction] || direction === laggingDirection) { continue }
+            let outcomes = directionOutcomes[direction];
+            const startingLength = outcomes.length;
 
-    for (let turn = 1; turn < turnsToLookAhead; turn++) {
-        for (const direction of directions){ 
-                if (!directionOutcomes[direction]) {continue}
+            for (outcomes.i; outcomes.i < startingLength; outcomes.i++) { //swap out startingLength for outcomes.length for depth-first
+                //if (snake.turns >= turnsToLookAhead){break} <---- this is used for depth-first
+                const backwards = backwardsDirection(outcomes[outcomes.i].snake);
+                for (const directionToSimulate of directions) {
+                    if (directionToSimulate === backwards) { continue };
+                    
+                    outcomes = processTurn(directionToSimulate, outcomes, outcomes.i, gameState);
+                }
+            }
+        }
+        if (!laggingDirection) { //remove this for depth-first
+            laggingDirection = getLaggingDirection(directionOutcomes) //remove this for depth-first
+        } //remove this for depth-first
+    } //remove this for depth first
 
-                const outcomes = directionOutcomes[direction];
-                const startingLength = outcomes.length;
-
-                for (outcomes.i; outcomes.i < startingLength; outcomes.i++){ 
-                        const snake = outcomes[outcomes.i].snake;
-
-                        for (const directionToSimulate of directions){ 
-                                if (directionToSimulate === backwardsDirection(snake)) { continue };
-                                processTurn(directionToSimulate, snake, outcomes, outcomes.i, gameState);
-                                //this function pushes the new simulated next-turn copies into the outcomes array
-                        }
-                }  
-        }    
+    for (key in directionOutcomes) {
+        directionOutcomes[key] = directionOutcomes[key].filter(e => e.snake.turns === turnsToLookAhead);
     }
+
     gameState.outcomes = directionOutcomes
     return gameState;
-    //NOTE doing -> for (direction in directionOutcomes){ }
-    // Would be Depth-First. Grab each key and iterate to completion of turn count, then go to next key
 }
 
-function processTurn(direction,snake,outcomes,i,gameState){ 
+function processTurn(direction, outcomes, i, gameState) {
+    const snake = outcomes[i].snake;
     let ateLastRound = outcomes[i].ateLastRound;
     let overfed = outcomes[i].overfed;
     let ateFood = outcomes[i].ateFood;
@@ -71,6 +78,7 @@ function processTurn(direction,snake,outcomes,i,gameState){
         if (copy.health > 99) { copy.health = 99 }
         outcomes.push({ snake: copy, ateLastRound, overfed, ateFood });
     }
+    return outcomes;
 }
 
 
@@ -185,11 +193,31 @@ function isOverfed(theSnake, overfeedTolerance) {
     else return false;
 }
 
+function getLaggingDirection(directionOutcomes) {
+    const lengthCounts = {}
+    const compare = []
+    for (key in directionOutcomes) {
+        let obj = {}
+        obj["direction"] = key;
+        obj["length"] = directionOutcomes[key].length
+        if (lengthCounts[obj.length]) { lengthCounts[obj.length]++ }
+        else { lengthCounts[obj.length] = 1 }
+        compare.push(obj)
+    }
+    compare.sort((a, b) => a.length - b.length)
+    let noTiedValues = true;
+    for (length in lengthCounts) {
+        if (lengthCounts[length] > 1) { noTiedValues = false; }
+    }
+    if (noTiedValues) { return compare[0].direction }
+    else { return "" }
+}
 
 
 if (typeof window !== "object") {
     module.exports = {
         getGameStateWithTurnSimulation,
-        getBreadthFirstOutcomesForAllDirectionsAfterNTurns
+        getBreadthFirstOutcomesForAllDirectionsAfterNTurns,
+        processTurn
     }
 }
