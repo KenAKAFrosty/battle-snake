@@ -1,7 +1,6 @@
 const { info, move } = require('../src/commandHandlingAndMetadata');
 const { getDirectionValuesFromOutcomes,
     getBestChoiceFromDirectionValues,
-    getDirectionFacing
  } = require('../src/logic/moveLogic');
 const { getGameStateWithTurnSimulation } = require('../src/logic/turnSimulation')
 
@@ -257,5 +256,42 @@ describe('Food management', () => {
         expect(directions.left > 0).toEqual(true);
         expect(directions.right === 0).toEqual(true);
         expect(directions.down > 0).toEqual(true);
+    })
+})
+
+
+describe('performance testing' ,()=> { 
+    test.only('view time spent when looking ahead a certain number of turns. small solo snake nothing else', ()=> { 
+        const you = {
+            id: "tester",
+            body: [
+                { x: 2, y: 1 },
+                { x: 3, y: 1 },
+                { x: 4, y: 1 },
+            ],
+            health: 100
+        }
+        const gameState = {
+            board: {
+                height: 11,
+                width: 11
+            },
+            you,
+            board: {
+                food: [],
+                snakes:[you]
+            },
+            ateLastRound: {}
+        }
+
+        const safeguard  = 7; 
+        for (let i = 1; i <= safeguard; i ++){ 
+            const start = performance.now();
+            console.time(`${i} turns`)
+            getGameStateWithTurnSimulation(gameState,i)
+            console.timeEnd(`${i} turns`)
+            const end = performance.now();
+            console.log(end-start)
+        }
     })
 })

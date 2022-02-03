@@ -1,6 +1,5 @@
 
 const { getMove, getIdsOfSnakesWhoAteThisRound, getDirectionFacing } = require('./logic/moveLogic.js');
-console.log(getDirectionFacing);
 function info() {
     console.log("INFO")
     const response = {

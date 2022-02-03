@@ -1,9 +1,11 @@
 const directions = ["up", "down", "left", "right"]
+const defaultNumberOfTurnsToLookAhead = 7;
 
-function getGameStateWithTurnSimulation(gameState) {
+function getGameStateWithTurnSimulation(gameState, turnsToLookAhead) {
+    turnsToLookAhead = turnsToLookAhead || defaultNumberOfTurnsToLookAhead
     const mySnake = gameState.you;
     mySnake.turns = 0;
-    gameState = getBreadthFirstOutcomesForAllDirectionsAfterNTurns(7, gameState);
+    gameState = getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, gameState);
     return gameState;
 }
 
@@ -11,9 +13,10 @@ function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, ga
     const now = Number(new Date());
     const outcomes = [{ snake: gameState.you, ateLastRound: gameState.ateLastRound }];
     for (let i = 0; i < outcomes.length; i++) {
-        const nowAgain = Number(new Date());
-        const difFromStart = nowAgain - now;
-        if (difFromStart > 400) { break }
+        // come back to this time testing, but leave out for now;
+        // const nowAgain = Number(new Date());
+        // const difFromStart = nowAgain - now;
+        // if (difFromStart > 400) { break }
         const snake = outcomes[i].snake;
         if (snake.turns && snake.turns >= turnsToLookAhead) { break }
         for (const direction of directions) {
