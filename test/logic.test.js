@@ -1,6 +1,8 @@
 const { info, move } = require('../src/commandHandlingAndMetadata');
 const { getDirectionValuesFromOutcomes,
-    getBestChoiceFromDirectionValues } = require('../src/logic/moveLogic');
+    getBestChoiceFromDirectionValues,
+    getDirectionFacing
+ } = require('../src/logic/moveLogic');
 const { getGameStateWithTurnSimulation } = require('../src/logic/turnSimulation')
 
 function createGameState(myBattlesnake, boardHeightAndWidth) {
@@ -84,7 +86,15 @@ describe('Food management', () => {
             board: {
                 food: [
                     { x: 2, y: 2 }
-                ]
+                ],
+                snakes:[{
+                    body: [
+                        { x: 2, y: 1 },
+                        { x: 3, y: 1 },
+                        { x: 4, y: 1 },
+                    ],
+                    health: 1
+                }]
             },
             ateLastRound: {}
         }
@@ -98,10 +108,6 @@ describe('Food management', () => {
 
     test('is aware that eating will cause elongation, tail is not safe the round after eating', () => {
         const gameState = {
-            board: {
-                height: 11,
-                width: 11
-            },
             you: {
                 id: "tester",
                 body: [
@@ -115,6 +121,20 @@ describe('Food management', () => {
                 health: 100
             },
             board: {
+                height: 11,
+                width: 11,
+                snakes:[{
+                    id: "tester",
+                    body: [
+                        { x: 2, y: 1 },
+                        { x: 3, y: 1 },
+                        { x: 4, y: 1 },
+                        { x: 4, y: 2 },
+                        { x: 3, y: 2 },
+                        { x: 2, y: 2 }
+                    ],
+                    health: 100
+                }],
                 food: [{ x: 1, y: 1 }]
             },
             ateLastRound: {
@@ -132,10 +152,6 @@ describe('Food management', () => {
 
     test('with an overfed tolerance set, will not grab nearby food if full', () => {
         const gameState = {
-            board: {
-                height: 11,
-                width: 11
-            },
             you: {
                 id: "tester",
                 body: [
@@ -149,6 +165,20 @@ describe('Food management', () => {
                 health: 100
             },
             board: {
+                height: 11,
+                width: 11,
+                snakes:[{
+                    id: "tester",
+                    body: [
+                        { x: 2, y: 1 },
+                        { x: 3, y: 1 },
+                        { x: 4, y: 1 },
+                        { x: 4, y: 2 },
+                        { x: 3, y: 2 },
+                        { x: 2, y: 2 }
+                    ],
+                    health: 100
+                }],
                 food: [{ x: 1, y: 1 }]
             },
             ateLastRound: {
@@ -174,10 +204,6 @@ describe('Food management', () => {
 
     test('with an overfed tolerance set, when faced with only non-death options that will overfeed, will fall back to survival and take one of those', () => {
         const gameState = {
-            board: {
-                height: 11,
-                width: 11
-            },
             you: {
                 id: "tester",
                 body: [
@@ -191,6 +217,20 @@ describe('Food management', () => {
                 health: 100
             },
             board: {
+                height: 11,
+                width: 11,
+                snakes:[{
+                    id: "tester",
+                    body: [
+                        { x: 2, y: 1 },
+                        { x: 3, y: 1 },
+                        { x: 4, y: 1 },
+                        { x: 4, y: 2 },
+                        { x: 3, y: 2 },
+                        { x: 2, y: 2 }
+                    ],
+                    health: 100
+                }],
                 food: [
                     { x: 1, y: 1 },
                     { x: 2, y: 0 }
