@@ -8,43 +8,42 @@ function getGameStateWithTurnSimulation(gameState) {
 }
 
 function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, gameState) {
-    const now = Number( new Date() );
-    const outcomes = [ {snake:gameState.you , ateLastRound:gameState.ateLastRound} ];
+    const now = Number(new Date());
+    const outcomes = [{ snake: gameState.you, ateLastRound: gameState.ateLastRound }];
     for (let i = 0; i < outcomes.length; i++) {
-        const nowAgain = Number( new Date() );
+        const nowAgain = Number(new Date());
         const difFromStart = nowAgain - now;
-        if (difFromStart > 400){break}
+        if (difFromStart > 400) { break }
         const snake = outcomes[i].snake;
         if (snake.turns && snake.turns >= turnsToLookAhead) { break }
         for (const direction of directions) {
+            const directionFacing = getDirectionFacing(snake);
+            const oppositeDirection = getOppositeDirection(directionFacing);
+            if (direction === oppositeDirection) { continue }
             let ateLastRound = outcomes[i].ateLastRound;
             let overfed = outcomes[i].overfed;
             let ateFood = outcomes[i].ateFood;
             const copy = JSON.parse(JSON.stringify(snake));
-
-            const directionFacing = getDirectionFacing(copy);
-            const oppositeDirection = getOppositeDirection(directionFacing);
-            if (direction === oppositeDirection){ continue }
             copy.health--
             move(copy, direction, ateLastRound)
             copy.turns++
             ateLastRound = {};
             const foundFood = didFindFood(copy, gameState.board.food)
-            if (foundFood) { 
-                copy.health += 100 
+            if (foundFood) {
+                copy.health += 100
                 ateLastRound[copy.id] = true;
-                overfed = isOverfed(copy,gameState.overfeedTolerance);
+                overfed = isOverfed(copy, gameState.overfeedTolerance);
                 ateFood = true;
-            } else { 
+            } else {
                 if (ateLastRound[copy.id]) delete ateLastRound[copy.id]
             }
             const snakeCollided = isCollidedWithBodyPart(copy, gameState.board.snakes)
             const boardCollided = isCollidedWithBoundary(copy, gameState.board.width)
             const outOfHealth = isOutOfHealth(copy);
-            
+
             if (!snakeCollided && !boardCollided && !outOfHealth) {
-                if (copy.health>99) {copy.health = 99}
-                outcomes.push({snake:copy, ateLastRound, overfed, ateFood});
+                if (copy.health > 99) { copy.health = 99 }
+                outcomes.push({ snake: copy, ateLastRound, overfed, ateFood });
             }
         }
 
@@ -75,14 +74,14 @@ function moveHead(head, direction) {
 function moveBody(snake, ateLastRound) {
     const body = snake.body
     const preMoveTail = {
-        x:body[body.length-1].x,
-        y:body[body.length-1].y
+        x: body[body.length - 1].x,
+        y: body[body.length - 1].y
     }
     for (let i = body.length - 1; i >= 1; i--) {  //ignore head, stop at 1 not 0
         body[i].x = body[i - 1].x;
         body[i].y = body[i - 1].y;
     }
-    if (ateLastRound[snake.id]){ 
+    if (ateLastRound[snake.id]) {
         body.push(preMoveTail);
     }
 }
@@ -121,18 +120,18 @@ function isOutOfHealth(theSnake) {
     else return false;
 }
 
-function isOverfed(theSnake,overfeedTolerance){
-    if (theSnake.health < 100) return false; 
-    if ( (theSnake.health - 100) > overfeedTolerance ) return true
+function isOverfed(theSnake, overfeedTolerance) {
+    if (theSnake.health < 100) return false;
+    if ((theSnake.health - 100) > overfeedTolerance) return true
     else return false;
 }
 
 
-function getDirectionFacing(snake){ 
+function getDirectionFacing(snake) {
     const head = snake.body[0];
     const neck = snake.body[1]
     if (neck.x < head.x) {
-       return "right"
+        return "right"
     } else if (neck.x > head.x) {
         return "left"
     } else if (neck.y < head.y) {
@@ -143,12 +142,12 @@ function getDirectionFacing(snake){
 }
 
 
-function getOppositeDirection(direction){
+function getOppositeDirection(direction) {
     return {
-        "right":"left",
-        "left":"right",
-        "up":"down",
-        "down":"up"
+        "right": "left",
+        "left": "right",
+        "up": "down",
+        "down": "up"
     }[direction]
 }
 
