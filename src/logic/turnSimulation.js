@@ -8,8 +8,12 @@ function getGameStateWithTurnSimulation(gameState) {
 }
 
 function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, gameState) {
+    const now = Number( new Date() );
     const outcomes = [ {snake:gameState.you , ateLastRound:gameState.ateLastRound} ];
     for (let i = 0; i < outcomes.length; i++) {
+        const nowAgain = Number( new Date() );
+        const difFromStart = nowAgain - now;
+        if (difFromStart > 400){break}
         const snake = outcomes[i].snake;
         if (snake.turns && snake.turns >= turnsToLookAhead) { break }
         for (const direction of directions) {
@@ -20,11 +24,7 @@ function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, ga
 
             const directionFacing = getDirectionFacing(copy);
             const oppositeDirection = getOppositeDirection(directionFacing);
-            if (direction === oppositeDirection){
-                continue
-            }
-
-
+            if (direction === oppositeDirection){ continue }
             copy.health--
             move(copy, direction, ateLastRound)
             copy.turns++
@@ -38,11 +38,11 @@ function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, ga
             } else { 
                 if (ateLastRound[copy.id]) delete ateLastRound[copy.id]
             }
-            const selfCollided = isCollidedWithBodyPart(copy, gameState.board.snakes)
+            const snakeCollided = isCollidedWithBodyPart(copy, gameState.board.snakes)
             const boardCollided = isCollidedWithBoundary(copy, gameState.board.width)
             const outOfHealth = isOutOfHealth(copy);
             
-            if (!selfCollided && !boardCollided && !outOfHealth) {
+            if (!snakeCollided && !boardCollided && !outOfHealth) {
                 if (copy.health>99) {copy.health = 99}
                 outcomes.push({snake:copy, ateLastRound, overfed, ateFood});
             }

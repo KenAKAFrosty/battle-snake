@@ -47,7 +47,7 @@ describe('Battlesnake API Version', () => {
 
 describe('Battlesnake Basic Death Prevention', () => {
     test('should never move into its own neck', () => {
-        const me = createBattlesnake("me", [{ x: 2, y: 1 }, { x: 1, y: 1 }, { x: 0, y: 1 }])
+        const me = createBattlesnake("me", [{ x: 2, y: 1 }, { x: 1, y:f 1 }, { x: 0, y: 1 }])
         const gameState = createGameState(me, 7);
         gameState.ateLastRound = {}
         const moveResponse = move(gameState)
