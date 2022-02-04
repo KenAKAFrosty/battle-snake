@@ -26,14 +26,25 @@ function end(gameState) {
 async function move(gameState) {
     gameState.ateLastRound = ateLastRound;
     if (gameState.board.snakes.length === 1) gameState.overfeedTolerance = 5
-    else gameState.overfeedTolerance = 105;
+    else {
+        let hasAtLeastTwoMoreHealthThanEveryone = true;
+        for (const snake of gameState.board.snakes) {
+            if (snake.id === gameState.you.id) { continue }
+            if (snake.health >= gameState.you.health - 2) { hasAtLeastTwoMoreHealthThanEveryone = false }
+        }
+        if (hasAtLeastTwoMoreHealthThanEveryone) {
+            gameState.overfeedTolerance = 15
+        } else {
+            gameState.overfeedTolerance = 105
+        }
+    };
     const move = await getMove(gameState);
-    const response = { 
+    const response = {
         move
     }
     ateLastRound = {};
     const ids = getIdsOfSnakesWhoAteThisRound(gameState);
-    for (const id of ids){ 
+    for (const id of ids) {
         ateLastRound[id] = true;
     }
     console.log(`${gameState.game.id} MOVE ${gameState.turn}: ${response.move}`)
