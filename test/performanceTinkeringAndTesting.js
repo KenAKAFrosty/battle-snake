@@ -1,5 +1,5 @@
 const { getGameStateWithTurnSimulation } = require('../src/logic/turnSimulation.js');
-
+const { performance } = require('perf_hooks');
 
 const you = {
     id: "tester",
@@ -16,7 +16,7 @@ const gameState = {
         width: 11
     },
     you,
-    board: {
+    board: { 
         food: [],
         snakes:[you]
     },
