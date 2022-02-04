@@ -1,5 +1,5 @@
 const directions = ["up", "down", "left", "right"]
-const defaultNumberOfTurnsToLookAhead = 9;
+const defaultNumberOfTurnsToLookAhead = 7;
 
 async function getGameStateWithTurnSimulation(gameState, turnsToLookAhead) {
     turnsToLookAhead = turnsToLookAhead || defaultNumberOfTurnsToLookAhead
@@ -26,22 +26,26 @@ async function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhe
                 //if (snake.turns >= turnsToLookAhead){break} <---- this is used for depth-first
                 const thisSnake = outcomes[outcomes.i].snake;
                 const backwards = backwardsDirection(thisSnake);
-                const distancesToWalls = [];
-                for (const wallDirection of directions) { 
-                    if (wallDirection != backwards){
-                        distancesToWalls.push({
-                            direction:wallDirection,
-                            distance:getDistanceFromWall(thisSnake.body[0],wallDirection,gameState.board.height)
-                        })
-                    }
-                }
-                distancesToWalls.sort((a,b) => a.distance - b.distance);
-                let closestWallDirection = "";
-                if (distancesToWalls[0].distance != distancesToWalls[1].distance) { 
-                    closestWallDirection = distancesToWalls[0].direction;
-                }
+
+
+                // const distancesToWalls = [];
+                // for (const wallDirection of directions) { 
+                //     if (wallDirection != backwards){
+                //         distancesToWalls.push({
+                //             direction:wallDirection,
+                //             distance:getDistanceFromWall(thisSnake.body[0],wallDirection,gameState.board.height)
+                //         })
+                //     }
+                // }
+                // distancesToWalls.sort((a,b) => a.distance - b.distance);
+                // let closestWallDirection = "";
+                // if (distancesToWalls[0].distance != distancesToWalls[1].distance) { 
+                //     closestWallDirection = distancesToWalls[0].direction;
+                // }
+
+
                 for (const directionToSimulate of directions) {
-                    if (directionToSimulate === backwards || directionToSimulate === closestWallDirection) { continue };
+                    if (directionToSimulate === backwards) { continue };
                     outcomePromise = processTurn(directionToSimulate, outcomes, outcomes.i, gameState);
                     promises.push[outcomePromise]
                 }
@@ -203,7 +207,7 @@ function isCollidedWithBodyPart(theSnake, allSnakes) {
             const partIsTail = ( part.x === tail.x ) && ( part.y === tail.y )  
             const partIsHead = ( part.x === head.x ) && ( part.y === head.y )
             if (isSelf) if (partIsTail || partIsHead) { continue }
-            
+
             if (theSnake.body[0].x === part.x && theSnake.body[0].y === part.y) {
                 return true;
             }
