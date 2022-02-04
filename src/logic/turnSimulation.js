@@ -1,6 +1,6 @@
 const directions = ["up", "down", "left", "right"]
 const defaultNumberOfTurnsToLookAhead = 7;
-
+const axios = require('axios');
 
 function getGameStateWithTurnSimulation(gameState, turnsToLookAhead) {
     turnsToLookAhead = turnsToLookAhead || defaultNumberOfTurnsToLookAhead
@@ -18,14 +18,16 @@ async function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhe
     for (const direction of directions) {
         if (direction !== backwards) {
             directionOutcomes[direction] = [initial]
+            const [, outcomes] = await processTurn(direction, directionOutcomes[direction], 0, gameState);
+            directionOutcomes[direction] = outcomes;
             directionOutcomes[direction]["i"] = 0;
-            processTurn(direction, directionOutcomes[direction], 0, gameState);
             directionOutcomes[direction].shift(); //the 0 element is still the current-state copy, we want that out now
         }
     }
 
     let laggingDirection = "";
     for (let turn = 1; turn < turnsToLookAhead; turn++) { //remove this for depth first
+        const promises = [];
         for (const direction of directions) {
             if (!directionOutcomes[direction] || direction === laggingDirection) { continue }
             let outcomes = directionOutcomes[direction];
@@ -36,20 +38,22 @@ async function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhe
                 const backwards = backwardsDirection(outcomes[outcomes.i].snake);
                 for (const directionToSimulate of directions) {
                     if (directionToSimulate === backwards) { continue };
-                    
-                    outcomes = processTurn(directionToSimulate, outcomes, outcomes.i, gameState);
+                    outcomePromise = processTurn(directionToSimulate, outcomes, outcomes.i, gameState);
+                    promises.push[outcomePromise]
                 }
             }
+        }
+        for (const promise of promises) {
+            const [directionUsed, outcome] = await promise;
+            directionOutcomes[directionUsed] = outcome;
         }
         if (!laggingDirection) { //remove this for depth-first
             laggingDirection = getLaggingDirection(directionOutcomes) //remove this for depth-first
         } //remove this for depth-first
     } //remove this for depth first
-
     for (key in directionOutcomes) {
         directionOutcomes[key] = directionOutcomes[key].filter(e => e.snake.turns === turnsToLookAhead);
     }
-
     gameState.outcomes = directionOutcomes
     return gameState;
 }
@@ -78,7 +82,7 @@ function processTurn(direction, outcomes, i, gameState) {
         if (copy.health > 99) { copy.health = 99 }
         outcomes.push({ snake: copy, ateLastRound, overfed, ateFood });
     }
-    return outcomes;
+    return new Promise(resolve => resolve([direction, outcomes]));
 }
 
 

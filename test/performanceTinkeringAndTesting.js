@@ -1,6 +1,5 @@
 const { getGameStateWithTurnSimulation } = require('../src/logic/turnSimulation.js');
-const workerpool = require('workerpool');
-const pool = workerpool.pool();
+
 
 const you = {
     id: "tester",
@@ -24,6 +23,8 @@ const gameState = {
     ateLastRound: {}
 }
 
+test();
+
 
 // console.log(`Number of turns we can complete in time: ${howManyTurnsInUnder(400, gameState)}`);
 async function test(){
@@ -31,7 +32,6 @@ async function test(){
     console.log('turns:',turns);
     console.log('outcomes:',outcomes)
 }
-test();
 // const outcomes = checkOutcomes(gameState,8);
 // for (key in outcomes){
 //     console.log(key, outcomes[key].length);
