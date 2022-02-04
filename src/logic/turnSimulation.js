@@ -1,5 +1,5 @@
 const directions = ["up", "down", "left", "right"]
-const defaultNumberOfTurnsToLookAhead = 7;
+const defaultNumberOfTurnsToLookAhead = 12;
 
 async function getGameStateWithTurnSimulation(gameState, turnsToLookAhead) {
     turnsToLookAhead = turnsToLookAhead || defaultNumberOfTurnsToLookAhead
@@ -37,7 +37,7 @@ async function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhe
                 }
                 distancesToWalls.sort((a,b) => a.distance - b.distance);
                 let closestWallDirection = "";
-                if (true){//distancesToWalls[0].distance != distancesToWalls[1].distance) { 
+                if (distancesToWalls[0].distance != distancesToWalls[1].distance) { 
                     closestWallDirection = distancesToWalls[0].direction;
                 }
                 for (const directionToSimulate of directions) {
