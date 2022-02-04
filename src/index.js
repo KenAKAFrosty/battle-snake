@@ -14,8 +14,9 @@ app.post("/start", (req, res) => {
     res.send(start(req.body))
 });
 
-app.post("/move", (req, res) => {
-    res.send(move(req.body))
+app.post("/move", async (req, res) => {
+    const moveMessage = await move(req.body)
+    res.send(moveMessage)
 });
 
 app.post("/end", (req, res) => {

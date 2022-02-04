@@ -10,10 +10,12 @@ async function getMove(gameState){
     }
     const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(prioritizeEatingButAvoidOverfeeding);
     const bestNotOverfedChoice = getBestChoiceFromDirectionValues(avoidOverfeedingDirections);
+    console.log(avoidOverfeedingDirections)
     if (bestNotOverfedChoice) { return bestNotOverfedChoice }
 
     const survivalDirections = getDirectionValuesFromOutcomes(directionOutcomes);
     const bestSurvivalChoice = getBestChoiceFromDirectionValues(survivalDirections);
+    console.log(survivalDirections)
     return bestSurvivalChoice;
 }
 
