@@ -1,8 +1,19 @@
 const { getGameStateWithTurnSimulation } = require('../src/logic/turnSimulation.js');
 const { performance } = require('perf_hooks');
-const numberOfCPUs = require('os').cpus().length;
+const forks = require('os').cpus().length;
+const cluster = require ('cluster');
 
-console.log('number of cpus:', numberOfCPUs)
+// if (cluster.isMaster){ 
+//     console.log(`master ${process.pid}`)
+//     console.log('number of cpus:', forks)
+//     for (let i = 0; i < forks; i++) { 
+//         cluster.fork()
+//     }
+// } else { 
+//     console.log(`worker: process ${process.pid}, worker id: ${cluster.worker.id} `)
+//     process.exit(0);
+// }
+
 const you = {
     id: "tester",
     body: [
@@ -30,7 +41,7 @@ test();
 
 // console.log(`Number of turns we can complete in time: ${howManyTurnsInUnder(400, gameState)}`);
 async function test(){
-    const [turns, outcomes] = await howManyTurnsInUnder(400, gameState);
+    const [turns, outcomes] = await howManyTurnsInUnder(30000, gameState);
     console.log('turns:',turns);
     console.log('outcomes:',outcomes)
 }
