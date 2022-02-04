@@ -9,7 +9,6 @@ async function getGameStateWithTurnSimulation(gameState, turnsToLookAhead) {
 }
 
 async function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, gameState) {
-
     const initial = { snake: gameState.you, ateLastRound: gameState.ateLastRound }
     const backwards = backwardsDirection(initial.snake);
 

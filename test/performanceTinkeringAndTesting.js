@@ -41,7 +41,7 @@ test();
 
 // console.log(`Number of turns we can complete in time: ${howManyTurnsInUnder(400, gameState)}`);
 async function test(){
-    const [turns, outcomes] = await howManyTurnsInUnder(400, gameState);
+    const [turns, outcomes] = await howManyTurnsInUnder(10000, gameState);
     console.log('turns:',turns);
     console.log('outcomes:',outcomes)
 }
