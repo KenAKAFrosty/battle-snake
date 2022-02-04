@@ -1,5 +1,5 @@
 const directions = ["up", "down", "left", "right"]
-const defaultNumberOfTurnsToLookAhead = 7;
+const defaultNumberOfTurnsToLookAhead = 8;
 
 async function getGameStateWithTurnSimulation(gameState, turnsToLookAhead) {
     turnsToLookAhead = turnsToLookAhead || defaultNumberOfTurnsToLookAhead

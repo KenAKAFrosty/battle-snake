@@ -4,6 +4,17 @@ const directions = ["up","down","left","right"]
 async function getMove(gameState){ 
     gameState = await getGameStateWithTurnSimulation(gameState);
     const directionOutcomes = gameState.outcomes; 
+
+    const strikeVulnerableEnemies = {}
+    for (const direction in directionOutcomes) {
+        strikeVulnerableEnemies[direction] = directionOutcomes[direction].filter(e=> e.struck)
+    }
+    const strikeVulnerableEnemiesDirections = getDirectionValuesFromOutcomes(strikeVulnerableEnemies);
+    const strikeVulnerableEnemiesChoice = getBestChoiceFromDirectionValues(strikeVulnerableEnemiesDirections);
+    console.log(strikeVulnerableEnemiesDirections)
+    if (strikeVulnerableEnemiesChoice) { return strikeVulnerableEnemiesChoice }
+
+
     const prioritizeEatingButAvoidOverfeeding = {}
     for (const direction in directionOutcomes) {
         prioritizeEatingButAvoidOverfeeding[direction] = directionOutcomes[direction].filter(e=> !e.overfed && e.ateFood)
