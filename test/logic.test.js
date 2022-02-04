@@ -191,6 +191,7 @@ describe('Food management', () => {
         const updatedGameState = await getGameStateWithTurnSimulation(gameState);
         const allOutcomes = updatedGameState.outcomes;
         const avoidOverfeeding = {}
+        console.log(allOutcomes)
         for (direction in allOutcomes){ 
             avoidOverfeeding[direction] = allOutcomes[direction].filter(e => !e.overfed);
         }

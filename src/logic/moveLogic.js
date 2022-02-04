@@ -8,9 +8,18 @@ async function getMove(gameState){
     for (const direction in directionOutcomes) {
         prioritizeEatingButAvoidOverfeeding[direction] = directionOutcomes[direction].filter(e=> !e.overfed && e.ateFood)
     }
-    const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(prioritizeEatingButAvoidOverfeeding);
-    const bestNotOverfedChoice = getBestChoiceFromDirectionValues(avoidOverfeedingDirections);
-    console.log(avoidOverfeedingDirections)
+    const feedButAvoidOverfeedingDirections = getDirectionValuesFromOutcomes(prioritizeEatingButAvoidOverfeeding);
+    const bestFedButNotOverfedChoice = getBestChoiceFromDirectionValues(feedButAvoidOverfeedingDirections);
+    console.log(feedButAvoidOverfeedingDirections)
+    if (bestFedButNotOverfedChoice) { return bestFedButNotOverfedChoice }
+
+    const justAvoidOverfeeding = {}
+    for (const direction in directionOutcomes) {
+        justAvoidOverfeeding[direction] = directionOutcomes[direction].filter(e=> !e.overfed)
+    }
+    const justAvoidOverfeedingDirections = getDirectionValuesFromOutcomes(justAvoidOverfeeding);
+    const bestNotOverfedChoice = getBestChoiceFromDirectionValues(justAvoidOverfeedingDirections);
+    console.log(justAvoidOverfeedingDirections);
     if (bestNotOverfedChoice) { return bestNotOverfedChoice }
 
     const survivalDirections = getDirectionValuesFromOutcomes(directionOutcomes);
