@@ -1,6 +1,5 @@
 const directions = ["up", "down", "left", "right"]
 const defaultNumberOfTurnsToLookAhead = 7;
-const axios = require('axios');
 
 function getGameStateWithTurnSimulation(gameState, turnsToLookAhead) {
     turnsToLookAhead = turnsToLookAhead || defaultNumberOfTurnsToLookAhead
@@ -43,10 +42,12 @@ async function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhe
                 }
             }
         }
+
         for (const promise of promises) {
             const [directionUsed, outcome] = await promise;
             directionOutcomes[directionUsed] = outcome;
         }
+
         if (!laggingDirection) { //remove this for depth-first
             laggingDirection = getLaggingDirection(directionOutcomes) //remove this for depth-first
         } //remove this for depth-first
