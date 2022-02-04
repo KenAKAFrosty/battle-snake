@@ -196,7 +196,14 @@ function didFindFood(theSnake, food) {
 
 function isCollidedWithBodyPart(theSnake, allSnakes) {
     for (const snake of allSnakes) {
-        for (const part of snake.body.slice(1)) {
+        const tail = snake.body[snake.body.length-1]
+        const head = snake.body[0];
+        for (const part of snake.body) {
+            const isSelf = (theSnake.id === allSnakes.id);
+            const partIsTail = ( part.x === tail.x ) && ( part.y === tail.y )  
+            const partIsHead = ( part.x === head.x ) && ( part.y === head.y )
+            if (isSelf) if (partIsTail || partIsHead) { continue }
+            
             if (theSnake.body[0].x === part.x && theSnake.body[0].y === part.y) {
                 return true;
             }
