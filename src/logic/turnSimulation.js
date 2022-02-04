@@ -95,6 +95,7 @@ function processTurn(direction, outcomes, i, gameState) {
     let ateLastRound = outcomes[i].ateLastRound;
     let overfed = outcomes[i].overfed;
     let ateFood = outcomes[i].ateFood;
+    let struck = outcomes[i].struck;
     const copy = JSON.parse(JSON.stringify(snake));
     copy.health--
     moveSnake(copy, direction, ateLastRound)
@@ -110,7 +111,9 @@ function processTurn(direction, outcomes, i, gameState) {
         if (ateLastRound[copy.id]) delete ateLastRound[copy.id]
     }
     const [ threatZones,strikeZones ] = getEnemyThreatAndStrikeZones(snake,gameState.board.snakes);
-    const struck = didEnterZone(copy, strikeZones);
+    if (didEnterZone(copy, strikeZones)) {
+        struck = true;
+    }
     const died = didSnakeDie(copy, gameState, threatZones);
     if (!died) {
         if (copy.health > 99) { copy.health = 99 }
