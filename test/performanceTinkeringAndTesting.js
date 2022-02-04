@@ -1,6 +1,8 @@
 const { getGameStateWithTurnSimulation } = require('../src/logic/turnSimulation.js');
 const { performance } = require('perf_hooks');
+const numberOfCPUs = require('os').cpus().length;
 
+console.log('number of cpus:', numberOfCPUs)
 const you = {
     id: "tester",
     body: [
