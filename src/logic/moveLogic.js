@@ -5,15 +5,18 @@ async function getMove(gameState){
     gameState = await getGameStateWithTurnSimulation(gameState);
     const directionOutcomes = gameState.outcomes; 
 
-    const strikeVulnerableEnemies = {}
-    for (const direction in directionOutcomes) {
-        strikeVulnerableEnemies[direction] = directionOutcomes[direction].filter(e=> e.struck)
+    const headAgainstWall = gameState.you.body[0].x === 0 || gameState.you.body[0].y === 0 ||
+                            gameState.you.body[0].x === gameState.board.height-1 || gameState.you.body[0].y === gameState.board.height -1
+    if (!headAgainstWall){
+        const strikeVulnerableEnemies = {}
+        for (const direction in directionOutcomes) {
+            strikeVulnerableEnemies[direction] = directionOutcomes[direction].filter(e=> e.struck)
+        }
+        const strikeVulnerableEnemiesDirections = getDirectionValuesFromOutcomes(strikeVulnerableEnemies);
+        const strikeVulnerableEnemiesChoice = getBestChoiceFromDirectionValues(strikeVulnerableEnemiesDirections);
+        console.log(strikeVulnerableEnemiesDirections)
+        if (strikeVulnerableEnemiesChoice) { return strikeVulnerableEnemiesChoice }
     }
-    const strikeVulnerableEnemiesDirections = getDirectionValuesFromOutcomes(strikeVulnerableEnemies);
-    const strikeVulnerableEnemiesChoice = getBestChoiceFromDirectionValues(strikeVulnerableEnemiesDirections);
-    console.log(strikeVulnerableEnemiesDirections)
-    if (strikeVulnerableEnemiesChoice) { return strikeVulnerableEnemiesChoice }
-
 
     const prioritizeEatingButAvoidOverfeeding = {}
     for (const direction in directionOutcomes) {
