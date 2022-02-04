@@ -109,22 +109,33 @@ function processTurn(direction, outcomes, i, gameState) {
     } else {
         if (ateLastRound[copy.id]) delete ateLastRound[copy.id]
     }
-    const died = didSnakeDie(copy, gameState);
+    const [ threatZones,strikeZones ] = getEnemyThreatAndStrikeZones(snake,gameState.board.snakes);
+    const struck = didEnterZone(copy, strikeZones);
+    const died = didSnakeDie(copy, gameState, threatZones);
     if (!died) {
         if (copy.health > 99) { copy.health = 99 }
-        outcomes.push({ snake: copy, ateLastRound, overfed, ateFood });
+        outcomes.push({ snake: copy, ateLastRound, overfed, ateFood, struck });
     }
     return new Promise(resolve => resolve([direction, outcomes]));
 }
 
 
-function didSnakeDie(copy, gameState) {
+function didSnakeDie(copy, gameState, threatZones) {
     const snakeCollided = isCollidedWithBodyPart(copy, gameState.board.snakes);
     const boardCollided = isCollidedWithBoundary(copy, gameState.board.width);
     const outOfHealth = isOutOfHealth(copy);
-    return snakeCollided || boardCollided || outOfHealth
+    const threatened = didEnterZone(copy, threatZones)
+    return snakeCollided || boardCollided || outOfHealth || threatened
 }
 
+function didEnterZone(snake, threatZones){ 
+    for (const spot of threatZones){ 
+        if (spot.x === snake.body[0].x && spot.y === snake.body[0].y){ 
+            return true
+        }
+    }
+    return false;
+}
 
 function backwardsDirection(snake) {
     const directionFacing = getDirectionFacing(snake);
@@ -257,6 +268,24 @@ function getLaggingDirection(directionOutcomes) {
 }
 
 
+function getEnemyThreatAndStrikeZones(mySnake,snakes){
+    const threatZones = [];
+    const strikeZones = [];
+    for (const snake of snakes) { 
+        if (snake.id === mySnake.id){ continue }
+        for (const direction of directions){ 
+            if (direction === backwardsDirection(snake)) { continue }
+            const zone = {x:snake.body[0].x , y:snake.body[0].y};
+            moveHead(zone,direction);
+            if (snake.body.length < mySnake.body.length) { strikeZones.push(zone) }
+            else { threatZones.push(zone) }
+        }
+    }
+    return [threatZones, strikeZones]
+}
+
+
+
 if (typeof window !== "object") {
     module.exports = {
         getGameStateWithTurnSimulation,
@@ -264,6 +293,7 @@ if (typeof window !== "object") {
         processTurn,
         moveSnake,
         getOppositeDirection,
-        getDistanceFromWall
+        getDistanceFromWall,
+        getEnemyThreatAndStrikeZones
     }
 }

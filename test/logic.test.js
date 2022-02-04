@@ -2,8 +2,8 @@ const { info, move } = require('../src/commandHandlingAndMetadata');
 const { getDirectionValuesFromOutcomes,
     getBestChoiceFromDirectionValues,
     snakesAreEqual
- } = require('../src/logic/moveLogic');
-const { getGameStateWithTurnSimulation, moveSnake, getOppositeDirection, getDistanceFromWall
+} = require('../src/logic/moveLogic');
+const { getGameStateWithTurnSimulation, moveSnake, getOppositeDirection, getDistanceFromWall, getEnemyThreatAndStrikeZones
 } = require('../src/logic/turnSimulation')
 
 function createGameState(myBattlesnake, boardHeightAndWidth) {
@@ -48,7 +48,7 @@ describe('Battlesnake API Version', () => {
 
 describe('Battlesnake Basic Death Prevention', () => {
     test('should never move into its own neck', async () => {
-        const me = createBattlesnake("me", [{ x: 2, y: 1 }, { x: 1, y:1 }, { x: 0, y: 1 }])
+        const me = createBattlesnake("me", [{ x: 2, y: 1 }, { x: 1, y: 1 }, { x: 0, y: 1 }])
         const gameState = createGameState(me, 7);
         gameState.ateLastRound = {}
         const moveResponse = await move(gameState)
@@ -88,7 +88,7 @@ describe('Food management', () => {
                 food: [
                     { x: 2, y: 2 }
                 ],
-                snakes:[{
+                snakes: [{
                     body: [
                         { x: 2, y: 1 },
                         { x: 3, y: 1 },
@@ -124,7 +124,7 @@ describe('Food management', () => {
             board: {
                 height: 11,
                 width: 11,
-                snakes:[{
+                snakes: [{
                     id: "tester",
                     body: [
                         { x: 2, y: 1 },
@@ -151,7 +151,7 @@ describe('Food management', () => {
         expect(directions.down > 0).toEqual(true);
     })
 
-    test('with an overfeed tolerance set, will not grab nearby food if full', async() => {
+    test('with an overfeed tolerance set, will not grab nearby food if full', async () => {
         const gameState = {
             you: {
                 id: "tester",
@@ -168,7 +168,7 @@ describe('Food management', () => {
             board: {
                 height: 11,
                 width: 11,
-                snakes:[{
+                snakes: [{
                     id: "tester",
                     body: [
                         { x: 2, y: 1 },
@@ -191,8 +191,7 @@ describe('Food management', () => {
         const updatedGameState = await getGameStateWithTurnSimulation(gameState);
         const allOutcomes = updatedGameState.outcomes;
         const avoidOverfeeding = {}
-        console.log(allOutcomes)
-        for (direction in allOutcomes){ 
+        for (direction in allOutcomes) {
             avoidOverfeeding[direction] = allOutcomes[direction].filter(e => !e.overfed);
         }
         const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(avoidOverfeeding);
@@ -219,7 +218,7 @@ describe('Food management', () => {
             board: {
                 height: 11,
                 width: 11,
-                snakes:[{
+                snakes: [{
                     id: "tester",
                     body: [
                         { x: 2, y: 1 },
@@ -246,7 +245,7 @@ describe('Food management', () => {
         const updatedGameState = await getGameStateWithTurnSimulation(gameState);
         const allOutcomes = updatedGameState.outcomes;
         const avoidOverfeeding = {}
-        for (direction in allOutcomes){ 
+        for (direction in allOutcomes) {
             avoidOverfeeding[direction] = allOutcomes[direction].filter(e => !e.overfed);
         }
         const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(avoidOverfeeding);
@@ -264,113 +263,159 @@ describe('Food management', () => {
 })
 
 
-describe('Misc. utilities', ()=> { 
-    test('properly asseses two equal snakes as equal',()=> { 
+describe('Misc. utilities', () => {
+    test('properly asseses two equal snakes as equal', () => {
         const snake1 = {
-            id:"one",
-            body:[
-                {x:1,y:1},
-                {x:2,y:1},
-                {x:3,y:2},
-                {x:3,y:3}
+            id: "one",
+            body: [
+                { x: 1, y: 1 },
+                { x: 2, y: 1 },
+                { x: 3, y: 2 },
+                { x: 3, y: 3 }
             ]
         }
         const snake2 = {
-            id:"two",
-            body:[
-                {x:1,y:1},
-                {x:2,y:1},
-                {x:3,y:2},
-                {x:3,y:3}
+            id: "two",
+            body: [
+                { x: 1, y: 1 },
+                { x: 2, y: 1 },
+                { x: 3, y: 2 },
+                { x: 3, y: 3 }
             ]
         }
-        expect(snakesAreEqual(snake1,snake2)).toEqual(true);
+        expect(snakesAreEqual(snake1, snake2)).toEqual(true);
 
     })
 
-    test('properly asseses two non-equal snakes are not equal', ()=> { 
+    test('properly asseses two non-equal snakes are not equal', () => {
         const snake1 = {
-            id:"one",
-            body:[
-                {x:1,y:1},
-                {x:2,y:1},
-                {x:3,y:2},
-                {x:3,y:3}
+            id: "one",
+            body: [
+                { x: 1, y: 1 },
+                { x: 2, y: 1 },
+                { x: 3, y: 2 },
+                { x: 3, y: 3 }
             ]
         }
         const snake2 = {
-            id:"two",
-            body:[
-                {x:2,y:5},
-                {x:2,y:6},
-                {x:2,y:7},
+            id: "two",
+            body: [
+                { x: 2, y: 5 },
+                { x: 2, y: 6 },
+                { x: 2, y: 7 },
             ]
         }
-        expect(snakesAreEqual(snake1,snake2)).toEqual(false);
+        expect(snakesAreEqual(snake1, snake2)).toEqual(false);
     })
 
-    test('properly gets the distance from all walls',()=>{ 
-        const coords = {x:1,y:2};
+    test('properly gets the distance from all walls', () => {
+        const coords = { x: 1, y: 2 };
         const boardSize = 11;
-        const distanceToRightWall = getDistanceFromWall(coords, "right",boardSize);
+        const distanceToRightWall = getDistanceFromWall(coords, "right", boardSize);
         expect(distanceToRightWall).toEqual(9)
-        const distanceToUpWall = getDistanceFromWall(coords,"up",boardSize);
+        const distanceToUpWall = getDistanceFromWall(coords, "up", boardSize);
         expect(distanceToUpWall).toEqual(8)
-        const distanceToLeftWall = getDistanceFromWall(coords, "left",boardSize);
+        const distanceToLeftWall = getDistanceFromWall(coords, "left", boardSize);
         expect(distanceToLeftWall).toEqual(1)
-        const distanceToDownWall = getDistanceFromWall(coords,"down",boardSize);
+        const distanceToDownWall = getDistanceFromWall(coords, "down", boardSize);
         expect(distanceToDownWall).toEqual(2)
     })
 })
 
-describe('Backwards searching',()=>{ 
-    test('single move',()=> { 
+describe('Backwards searching', () => {
+    test('single move', () => {
         const snake1 = {
-            id:"one",
-            body:[
-                {x:2,y:1},
-                {x:2,y:2},
-                {x:3,y:2},
-                {x:4,y:2}
+            id: "one",
+            body: [
+                { x: 2, y: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y: 2 },
+                { x: 4, y: 2 }
             ]
         }
         const snake2 = {
-            id:"two",
-            body:[
-                {x:1,y:1},
-                {x:2,y:1},
-                {x:2,y:2},
-                {x:3,y:2}
+            id: "two",
+            body: [
+                { x: 1, y: 1 },
+                { x: 2, y: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y: 2 }
             ]
         }
         snake2.body.reverse();
-        moveSnake(snake2,"right");
+        moveSnake(snake2, "right");
         snake2.body.reverse();
-        expect(snakesAreEqual(snake1,snake2)).toEqual(true);
+        expect(snakesAreEqual(snake1, snake2)).toEqual(true);
     })
-    test('two moves',()=> { 
+    test('two moves', () => {
         const snake1 = {
-            id:"one",
-            body:[
-                {x:2,y:2},
-                {x:3,y:2},
-                {x:3,y:3},
-                {x:4,y:3}
+            id: "one",
+            body: [
+                { x: 2, y: 2 },
+                { x: 3, y: 2 },
+                { x: 3, y: 3 },
+                { x: 4, y: 3 }
             ]
         }
         const snake2 = {
-            id:"two",
-            body:[
-                {x:1,y:1},
-                {x:2,y:1},
-                {x:2,y:2},
-                {x:3,y:2}
+            id: "two",
+            body: [
+                { x: 1, y: 1 },
+                { x: 2, y: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y: 2 }
             ]
         }
         snake2.body.reverse();
-        moveSnake(snake2,"up");
-        moveSnake(snake2,"right");
+        moveSnake(snake2, "up");
+        moveSnake(snake2, "right");
         snake2.body.reverse();
-        expect(snakesAreEqual(snake1,snake2)).toEqual(true);
+        expect(snakesAreEqual(snake1, snake2)).toEqual(true);
+    })
+})
+
+describe('Combat', () => {
+    test('properly identifies strike/threat zones', () => {
+        const snakes = [
+            {
+                id:"smallerBody",
+                body: [
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                    { x: 4, y: 1 },
+                ]
+            },
+            {
+                id:"me",
+                body:[
+                    { x: 2, y: 8 },
+                    { x: 3, y: 8 },
+                    { x: 4, y: 8 },
+                    { x: 5, y: 8 },
+                ]
+            },
+            {
+                id:"largerBody",
+                body:[
+                    { x: 2, y: 5 },
+                    { x: 3, y: 5 },
+                    { x: 4, y: 5 },
+                    { x: 5, y: 5 },
+                    { x: 6, y: 5 },
+                ]
+            }
+        ];
+        const [threatZones, strikeZones] = getEnemyThreatAndStrikeZones(snakes[1],snakes);
+        expect(threatZones).toEqual([
+            {x: 2, y:6},
+            {x: 2, y:4},
+            {x: 1, y:5},
+        ]);
+        expect(strikeZones).toEqual([
+            {x:2,y:2},
+            {x:2,y:0},
+            {x:1,y:1}
+        ])
+
     })
 })
