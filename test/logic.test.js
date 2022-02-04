@@ -3,7 +3,8 @@ const { getDirectionValuesFromOutcomes,
     getBestChoiceFromDirectionValues,
     snakesAreEqual
  } = require('../src/logic/moveLogic');
-const { getGameStateWithTurnSimulation } = require('../src/logic/turnSimulation')
+const { getGameStateWithTurnSimulation, moveSnake, getOppositeDirection, getDistanceFromWall
+} = require('../src/logic/turnSimulation')
 
 function createGameState(myBattlesnake, boardHeightAndWidth) {
     return {
@@ -194,7 +195,6 @@ describe('Food management', () => {
             avoidOverfeeding[direction] = allOutcomes[direction].filter(e => !e.overfed);
         }
         const avoidOverfeedingDirections = getDirectionValuesFromOutcomes(avoidOverfeeding);
-        console.log(avoidOverfeedingDirections)
         expect(avoidOverfeedingDirections.up === 0).toEqual(true);
         expect(avoidOverfeedingDirections.left === 0).toEqual(true);
         expect(!avoidOverfeedingDirections.right).toEqual(true);
@@ -306,5 +306,70 @@ describe('Misc. utilities', ()=> {
             ]
         }
         expect(snakesAreEqual(snake1,snake2)).toEqual(false);
+    })
+
+    test('properly gets the distance from all walls',()=>{ 
+        const coords = {x:1,y:2};
+        const boardSize = 11;
+        const distanceToRightWall = getDistanceFromWall(coords, "right",boardSize);
+        expect(distanceToRightWall).toEqual(9)
+        const distanceToUpWall = getDistanceFromWall(coords,"up",boardSize);
+        expect(distanceToUpWall).toEqual(8)
+        const distanceToLeftWall = getDistanceFromWall(coords, "left",boardSize);
+        expect(distanceToLeftWall).toEqual(1)
+        const distanceToDownWall = getDistanceFromWall(coords,"down",boardSize);
+        expect(distanceToDownWall).toEqual(2)
+    })
+})
+
+describe('Backwards searching',()=>{ 
+    test('single move',()=> { 
+        const snake1 = {
+            id:"one",
+            body:[
+                {x:2,y:1},
+                {x:2,y:2},
+                {x:3,y:2},
+                {x:4,y:2}
+            ]
+        }
+        const snake2 = {
+            id:"two",
+            body:[
+                {x:1,y:1},
+                {x:2,y:1},
+                {x:2,y:2},
+                {x:3,y:2}
+            ]
+        }
+        snake2.body.reverse();
+        moveSnake(snake2,"right");
+        snake2.body.reverse();
+        expect(snakesAreEqual(snake1,snake2)).toEqual(true);
+    })
+    test('two moves',()=> { 
+        const snake1 = {
+            id:"one",
+            body:[
+                {x:2,y:2},
+                {x:3,y:2},
+                {x:3,y:3},
+                {x:4,y:3}
+            ]
+        }
+        const snake2 = {
+            id:"two",
+            body:[
+                {x:1,y:1},
+                {x:2,y:1},
+                {x:2,y:2},
+                {x:3,y:2}
+            ]
+        }
+        snake2.body.reverse();
+        moveSnake(snake2,"up");
+        moveSnake(snake2,"right");
+        snake2.body.reverse();
+        expect(snakesAreEqual(snake1,snake2)).toEqual(true);
     })
 })

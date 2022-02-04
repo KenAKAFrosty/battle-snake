@@ -13,30 +13,35 @@ async function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhe
     const backwards = backwardsDirection(initial.snake);
 
     //initial setup for each original direction taken
-    let directionOutcomes = {}
-    for (const direction of directions) {
-        if (direction !== backwards) {
-            directionOutcomes[direction] = [initial]
-            const [, outcomes] = await processTurn(direction, directionOutcomes[direction], 0, gameState);
-            directionOutcomes[direction] = outcomes;
-            directionOutcomes[direction]["i"] = 0;
-            directionOutcomes[direction].shift(); //the 0 element is still the current-state copy, we want that out now
-        }
-    }
+    let directionOutcomes = await getInitialDirectionOutcomes(backwards, initial, gameState);
 
-    let laggingDirection = "";
     for (let turn = 1; turn < turnsToLookAhead; turn++) { //remove this for depth first
         const promises = [];
         for (const direction of directions) {
-            if (!directionOutcomes[direction] || direction === laggingDirection) { continue }
+            if (!directionOutcomes[direction]) { continue }
             let outcomes = directionOutcomes[direction];
             const startingLength = outcomes.length;
 
             for (outcomes.i; outcomes.i < startingLength; outcomes.i++) { //swap out startingLength for outcomes.length for depth-first
                 //if (snake.turns >= turnsToLookAhead){break} <---- this is used for depth-first
-                const backwards = backwardsDirection(outcomes[outcomes.i].snake);
+                const thisSnake = outcomes[outcomes.i].snake;
+                const backwards = backwardsDirection(thisSnake);
+                const distancesToWalls = [];
+                for (const wallDirection of directions) { 
+                    if (wallDirection != backwards){
+                        distancesToWalls.push({
+                            direction:wallDirection,
+                            distance:getDistanceFromWall(thisSnake.body[0],wallDirection,gameState.board.height)
+                        })
+                    }
+                }
+                distancesToWalls.sort((a,b) => a.distance - b.distance);
+                let closestWallDirection = "";
+                if (true){//distancesToWalls[0].distance != distancesToWalls[1].distance) { 
+                    closestWallDirection = distancesToWalls[0].direction;
+                }
                 for (const directionToSimulate of directions) {
-                    if (directionToSimulate === backwards) { continue };
+                    if (directionToSimulate === backwards || directionToSimulate === closestWallDirection) { continue };
                     outcomePromise = processTurn(directionToSimulate, outcomes, outcomes.i, gameState);
                     promises.push[outcomePromise]
                 }
@@ -48,16 +53,37 @@ async function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhe
             const [directionUsed, outcome] = await promise;
             directionOutcomes[directionUsed] = outcome;
         }
-
-        if (!laggingDirection) { //remove this for depth-first
-            laggingDirection = getLaggingDirection(directionOutcomes) //remove this for depth-first
-        } //remove this for depth-first
     } //remove this for depth first
     for (key in directionOutcomes) {
         directionOutcomes[key] = directionOutcomes[key].filter(e => e.snake.turns === turnsToLookAhead);
     }
+
     gameState.outcomes = directionOutcomes
     return gameState;
+}
+
+function getDistanceFromWall(coordsObj, direction, boardSize){ 
+
+    return { 
+        "up":function(){return (boardSize-1) - coordsObj.y},
+        "down":function(){return coordsObj.y},
+        "right":function(){return (boardSize-1) - coordsObj.x},
+        "left":function(){return coordsObj.x},
+    }[direction]()
+}
+
+async function getInitialDirectionOutcomes(backwards, initial, gameState) {
+    let directionOutcomes = {};
+    for (const direction of directions) {
+        if (direction !== backwards) {
+            directionOutcomes[direction] = [initial];
+            const [, outcomes] = await processTurn(direction, directionOutcomes[direction], 0, gameState);
+            directionOutcomes[direction] = outcomes;
+            directionOutcomes[direction]["i"] = 0;
+            directionOutcomes[direction].shift(); //the 0 element is still the current-state copy, we want that out now
+        }
+    }
+    return directionOutcomes;
 }
 
 function processTurn(direction, outcomes, i, gameState) {
@@ -67,7 +93,7 @@ function processTurn(direction, outcomes, i, gameState) {
     let ateFood = outcomes[i].ateFood;
     const copy = JSON.parse(JSON.stringify(snake));
     copy.health--
-    move(copy, direction, ateLastRound)
+    moveSnake(copy, direction, ateLastRound)
     copy.turns++
     ateLastRound = {};
     const foundFood = didFindFood(copy, gameState.board.food)
@@ -128,7 +154,7 @@ function getOppositeDirection(direction) {
 
 
 
-function move(snake, direction, ateLastRound) {
+function moveSnake(snake, direction, ateLastRound = {}) {
     moveBody(snake, ateLastRound)
     moveHead(snake.body[0], direction)
     // if (!snake["originalDirection"]) snake["originalDirection"] = direction;
@@ -224,6 +250,9 @@ if (typeof window !== "object") {
     module.exports = {
         getGameStateWithTurnSimulation,
         getBreadthFirstOutcomesForAllDirectionsAfterNTurns,
-        processTurn
+        processTurn,
+        moveSnake,
+        getOppositeDirection,
+        getDistanceFromWall
     }
 }

@@ -24,14 +24,12 @@ const you = {
     health: 100
 }
 const gameState = {
-    board: {
-        height: 11,
-        width: 11
-    },
     you,
     board: { 
         food: [],
-        snakes:[you]
+        snakes:[you],
+        height: 11,
+        width: 11
     },
     ateLastRound: {}
 }
@@ -39,19 +37,18 @@ const gameState = {
 test();
 
 
-// console.log(`Number of turns we can complete in time: ${howManyTurnsInUnder(400, gameState)}`);
 async function test(){
-    const [turns, outcomes] = await howManyTurnsInUnder(10000, gameState);
+    const [turns, outcomes] = await howManyTurnsInUnder(400, gameState);
     console.log('turns:',turns);
     console.log('outcomes:',outcomes)
+    // const outcomes = await checkOutcomes(gameState,2);
+    // for (element of outcomes.left){ 
+    //     console.log(element.snake.body)
+    // }
 }
-// const outcomes = checkOutcomes(gameState,8);
-// for (key in outcomes){
-//     console.log(key, outcomes[key].length);
-// }
 
 async function howManyTurnsInUnder(milliseconds, gameState){ 
-   
+    console.log(`Testing max turns we can look ahead within ${milliseconds}ms`)
     const safeguard  = 20; 
     let numberOfTurns = 0;
     let outcomesLengths = {}
@@ -72,7 +69,7 @@ async function howManyTurnsInUnder(milliseconds, gameState){
     return [numberOfTurns, outcomesLengths[numberOfTurns]]
 }
 
-function checkOutcomes(gameState, numberOfTurns){ 
-    const state = getGameStateWithTurnSimulation(gameState,numberOfTurns);
+async function checkOutcomes(gameState, numberOfTurns){ 
+    const state = await getGameStateWithTurnSimulation(gameState,numberOfTurns);
     return state.outcomes;
 }
