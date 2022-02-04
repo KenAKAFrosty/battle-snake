@@ -23,11 +23,11 @@ function end(gameState) {
     console.log(`${gameState.game.id} END\n`)
 }
 
-function move(gameState) {
+async function move(gameState) {
     gameState.ateLastRound = ateLastRound;
     if (gameState.board.snakes.length === 1) gameState.overfeedTolerance = 5
     else gameState.overfeedTolerance = 105;
-    const move = getMove(gameState);
+    const move = await getMove(gameState);
     const response = { 
         move
     }

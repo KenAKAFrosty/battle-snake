@@ -1,10 +1,10 @@
 const directions = ["up", "down", "left", "right"]
 const defaultNumberOfTurnsToLookAhead = 7;
 
-function getGameStateWithTurnSimulation(gameState, turnsToLookAhead) {
+async function getGameStateWithTurnSimulation(gameState, turnsToLookAhead) {
     turnsToLookAhead = turnsToLookAhead || defaultNumberOfTurnsToLookAhead
     gameState.you.turns = 0;
-    gameState = getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, gameState);
+    gameState = await getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhead, gameState);
     return gameState;
 }
 

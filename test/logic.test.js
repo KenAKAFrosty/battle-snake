@@ -1,6 +1,7 @@
 const { info, move } = require('../src/commandHandlingAndMetadata');
 const { getDirectionValuesFromOutcomes,
     getBestChoiceFromDirectionValues,
+    snakesAreEqual
  } = require('../src/logic/moveLogic');
 const { getGameStateWithTurnSimulation } = require('../src/logic/turnSimulation')
 
@@ -45,21 +46,21 @@ describe('Battlesnake API Version', () => {
 })
 
 describe('Battlesnake Basic Death Prevention', () => {
-    test('should never move into its own neck', () => {
+    test('should never move into its own neck', async () => {
         const me = createBattlesnake("me", [{ x: 2, y: 1 }, { x: 1, y:1 }, { x: 0, y: 1 }])
         const gameState = createGameState(me, 7);
         gameState.ateLastRound = {}
-        const moveResponse = move(gameState)
+        const moveResponse = await move(gameState)
         const allowedMoves = ["up", "down", "right"]
         expect(allowedMoves).toContain(moveResponse.move)
     })
 
-    test(`Battlesnake doesn't move out of bounds`, () => {
+    test(`Battlesnake doesn't move out of bounds`, async () => {
         const facingDownInBottomLeftCorner = [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: 0, y: 3 }]
         const me = createBattlesnake("me", facingDownInBottomLeftCorner);
         const gameState = createGameState(me, 11);
         gameState.ateLastRound = {}
-        const moveResponse = move(gameState);
+        const moveResponse = await move(gameState);
         const allowedMoves = ["right"];
         expect(allowedMoves).toContain(moveResponse.move);
     })
@@ -67,7 +68,7 @@ describe('Battlesnake Basic Death Prevention', () => {
 
 
 describe('Food management', () => {
-    test('with only 1 health left and immediately adjacent to food above it, with no other threats, should grab food and nothing else', () => {
+    test('with only 1 health left and immediately adjacent to food above it, with o other threats, should grab food and nothing else', async () => {
         const gameState = {
             id: "tester",
             board: {
@@ -97,7 +98,7 @@ describe('Food management', () => {
             },
             ateLastRound: {}
         }
-        const updatedGameState = getGameStateWithTurnSimulation(gameState);
+        const updatedGameState = await getGameStateWithTurnSimulation(gameState);
         const directions = getDirectionValuesFromOutcomes(updatedGameState.outcomes)
         expect(directions.up > 0).toEqual(true);
         expect(directions.left === 0).toEqual(true);
@@ -105,7 +106,7 @@ describe('Food management', () => {
         expect(directions.down === 0).toEqual(true);
     })
 
-    test('is aware that eating will cause elongation, tail is not safe the round after eating', () => {
+    test('is aware that eating will cause elongation, tail is not safe the round after eating', async () => {
         const gameState = {
             you: {
                 id: "tester",
@@ -142,14 +143,14 @@ describe('Food management', () => {
             overfeedTolerance: 100
         }
 
-        const updatedGameState = getGameStateWithTurnSimulation(gameState);
+        const updatedGameState = await getGameStateWithTurnSimulation(gameState);
         const directions = getDirectionValuesFromOutcomes(updatedGameState.outcomes)
         expect(directions.up === 0).toEqual(true);
         expect(directions.left > 0).toEqual(true);
         expect(directions.down > 0).toEqual(true);
     })
 
-    test('with an overfeed tolerance set, will not grab nearby food if full', () => {
+    test('with an overfeed tolerance set, will not grab nearby food if full', async() => {
         const gameState = {
             you: {
                 id: "tester",
@@ -186,7 +187,7 @@ describe('Food management', () => {
             overfeedTolerance: 5
         }
 
-        const updatedGameState = getGameStateWithTurnSimulation(gameState);
+        const updatedGameState = await getGameStateWithTurnSimulation(gameState);
         const allOutcomes = updatedGameState.outcomes;
         const avoidOverfeeding = {}
         for (direction in allOutcomes){ 
@@ -200,7 +201,7 @@ describe('Food management', () => {
         expect(avoidOverfeedingDirections.down > 0).toEqual(true);
     })
 
-    test('with an overfed tolerance set, when faced with only non-death options that will overfeed, will fall back to survival and take one of those', () => {
+    test('with an overfed tolerance set, when faced with only non-death options that will overfeed, will fall back to survival and take one of those', async () => {
         const gameState = {
             you: {
                 id: "tester",
@@ -241,7 +242,7 @@ describe('Food management', () => {
         }
 
         let directions;
-        const updatedGameState = getGameStateWithTurnSimulation(gameState);
+        const updatedGameState = await getGameStateWithTurnSimulation(gameState);
         const allOutcomes = updatedGameState.outcomes;
         const avoidOverfeeding = {}
         for (direction in allOutcomes){ 
@@ -261,3 +262,49 @@ describe('Food management', () => {
     })
 })
 
+
+describe('Misc. utilities', ()=> { 
+    test('properly asseses two equal snakes as equal',()=> { 
+        const snake1 = {
+            id:"one",
+            body:[
+                {x:1,y:1},
+                {x:2,y:1},
+                {x:3,y:2},
+                {x:3,y:3}
+            ]
+        }
+        const snake2 = {
+            id:"two",
+            body:[
+                {x:1,y:1},
+                {x:2,y:1},
+                {x:3,y:2},
+                {x:3,y:3}
+            ]
+        }
+        expect(snakesAreEqual(snake1,snake2)).toEqual(true);
+
+    })
+
+    test('properly asseses two non-equal snakes are not equal', ()=> { 
+        const snake1 = {
+            id:"one",
+            body:[
+                {x:1,y:1},
+                {x:2,y:1},
+                {x:3,y:2},
+                {x:3,y:3}
+            ]
+        }
+        const snake2 = {
+            id:"two",
+            body:[
+                {x:2,y:5},
+                {x:2,y:6},
+                {x:2,y:7},
+            ]
+        }
+        expect(snakesAreEqual(snake1,snake2)).toEqual(false);
+    })
+})

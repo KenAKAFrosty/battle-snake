@@ -1,10 +1,9 @@
 const { getGameStateWithTurnSimulation } = require("./turnSimulation.js");
 const directions = ["up","down","left","right"]
 
-function getMove(gameState){ 
-    gameState = getGameStateWithTurnSimulation(gameState);
+async function getMove(gameState){ 
+    gameState = await getGameStateWithTurnSimulation(gameState);
     const directionOutcomes = gameState.outcomes; 
-    
     const prioritizeEatingButAvoidOverfeeding = {}
     for (const direction in directionOutcomes) {
         prioritizeEatingButAvoidOverfeeding[direction] = directionOutcomes[direction].filter(e=> !e.overfed && e.ateFood)
@@ -54,9 +53,19 @@ function getBestChoiceFromDirectionValues(directionValues){
     else {return choice}
 }
 
+function snakesAreEqual(snake1,snake2){ 
+    if (snake1.body.length !== snake2.body.length) { return false };
+    for (let i = 0; i < snake1.body.length; i++){ 
+        if (snake1.body[i].x != snake2.body[i].x ||
+            snake1.body[i].y != snake2.body[i].y) { return false };
+    }
+    return true; 
+}
+
 module.exports = { 
     getMove,
     getIdsOfSnakesWhoAteThisRound,
     getDirectionValuesFromOutcomes,
     getBestChoiceFromDirectionValues,
+    snakesAreEqual
 }
