@@ -27,14 +27,6 @@ async function move(gameState) {
     gameState.ateLastRound = ateLastRound;
     if (gameState.board.snakes.length === 1) gameState.overfeedTolerance = 5
     else {
-        let hasAtLeastTwoMoreHealthThanEveryone = true;
-        for (const snake of gameState.board.snakes) {
-            if (snake.id === gameState.you.id) { continue }
-            if (snake.health >= gameState.you.health - 2) { hasAtLeastTwoMoreHealthThanEveryone = false }
-        }
-        if (hasAtLeastTwoMoreHealthThanEveryone) {
-            gameState.overfeedTolerance = 15
-        } else {
             gameState.overfeedTolerance = 105
         }
     };
