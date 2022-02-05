@@ -27,22 +27,7 @@ async function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhe
                 const thisSnake = outcomes[outcomes.i].snake;
                 const backwards = backwardsDirection(thisSnake);
 
-
-                // const distancesToWalls = [];
-                // for (const wallDirection of directions) { 
-                //     if (wallDirection != backwards){
-                //         distancesToWalls.push({
-                //             direction:wallDirection,
-                //             distance:getDistanceFromWall(thisSnake.body[0],wallDirection,gameState.board.height)
-                //         })
-                //     }
-                // }
-                // distancesToWalls.sort((a,b) => a.distance - b.distance);
-                // let closestWallDirection = "";
-                // if (distancesToWalls[0].distance != distancesToWalls[1].distance) { 
-                //     closestWallDirection = distancesToWalls[0].direction;
-                // }
-
+               const closestWallDirection = getClosestWallDirection(backwards, thisSnake, gameState); //not using this pruning currently
 
                 for (const directionToSimulate of directions) {
                     if (directionToSimulate === backwards) { continue };
@@ -64,6 +49,24 @@ async function getBreadthFirstOutcomesForAllDirectionsAfterNTurns(turnsToLookAhe
 
     gameState.outcomes = directionOutcomes
     return gameState;
+}
+
+function getClosestWallDirection(backwards, thisSnake, gameState) {
+    const distancesToWalls = [];
+    for (const wallDirection of directions) {
+        if (wallDirection != backwards) {
+            distancesToWalls.push({
+                direction: wallDirection,
+                distance: getDistanceFromWall(thisSnake.body[0], wallDirection, gameState.board.height)
+            });
+        }
+    }
+    distancesToWalls.sort((a, b) => a.distance - b.distance);
+    let closestWallDirection = "";
+    if (distancesToWalls[0].distance != distancesToWalls[1].distance) {
+        closestWallDirection = distancesToWalls[0].direction;
+    }
+    return closestWallDirection
 }
 
 function getDistanceFromWall(coordsObj, direction, boardSize){ 
