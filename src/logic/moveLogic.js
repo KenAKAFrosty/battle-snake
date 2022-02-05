@@ -39,6 +39,13 @@ async function getMove(gameState){
     const survivalDirections = getDirectionValuesFromOutcomes(directionOutcomes);
     const bestSurvivalChoice = getBestChoiceFromDirectionValues(survivalDirections);
     console.log(survivalDirections)
+    let noValidMove = true;
+    for (key in survivalDirections){
+        if (survivalDirections[key] > 0){ 
+            noValidMove = false;
+        }
+    }
+    console.log(noValidMove)
     return bestSurvivalChoice;
 }
 

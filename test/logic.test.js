@@ -65,6 +65,45 @@ describe('Battlesnake Basic Death Prevention', () => {
         const allowedMoves = ["right"];
         expect(allowedMoves).toContain(moveResponse.move);
     })
+
+    test(`Knows own tail is safe`, async ()=>{ 
+        const gameState = {
+            id: "tester",
+            board: {
+                height: 11,
+                width: 11
+            },
+            you: {
+                body: [
+                    { x: 0, y: 0 },
+                    { x: 1, y: 0 },
+                    { x: 2, y: 0 },
+                    { x: 2, y: 1 },
+                    { x: 1, y: 1 },
+                    { x: 0, y: 1 },
+                ],
+                health: 100
+            },
+            board: {
+                food: [],
+                snakes: [{
+                    body: [
+                        { x: 0, y: 0 },
+                        { x: 1, y: 0 },
+                        { x: 2, y: 0 },
+                        { x: 2, y: 1 },
+                        { x: 1, y: 1 },
+                        { x: 0, y: 1 },
+                    ],
+                    health: 100
+                }]
+            },
+            ateLastRound: {}
+        }
+        const updatedGameState = await getGameStateWithTurnSimulation(gameState);
+        const directions = getDirectionValuesFromOutcomes(updatedGameState.outcomes)
+        expect(directions.up > 0).toEqual(true);
+    })
 })
 
 
