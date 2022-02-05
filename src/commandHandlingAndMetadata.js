@@ -29,7 +29,6 @@ async function move(gameState) {
     else {
             gameState.overfeedTolerance = 105
         }
-    };
     const move = await getMove(gameState);
     const response = {
         move
