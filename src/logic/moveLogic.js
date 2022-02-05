@@ -45,7 +45,7 @@ async function getMove(gameState){
             noValidMove = false;
         }
     }
-    console.log(noValidMove)
+    if (noValidMove) {console.log(directionOutcomes)}
     return bestSurvivalChoice;
 }
 
