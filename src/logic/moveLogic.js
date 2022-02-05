@@ -45,7 +45,12 @@ async function getMove(gameState){
             noValidMove = false;
         }
     }
-    if (noValidMove) {console.log(gameState)}
+    if (noValidMove) {
+        console.log(gameState, gameState.board.food)
+        for (const snake of gameState.board.snakes){ 
+            console.log(snake,snake.body)
+        }
+    }
     return bestSurvivalChoice;
 }
 
